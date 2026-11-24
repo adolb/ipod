@@ -18,6 +18,21 @@
             --lcd-ink: #171c14;
             --lcd-ghost: rgba(23, 28, 20, 0.08);
             --lcd-grid: rgba(23, 28, 20, 0.045);
+
+            --chassis-bg:
+                repeating-linear-gradient(
+                    90deg,
+                    rgba(255, 255, 255, 0.05) 0px,
+                    rgba(255, 255, 255, 0.05) 1px,
+                    rgba(0, 0, 0, 0.025) 1px,
+                    rgba(0, 0, 0, 0.025) 2px
+                ),
+                radial-gradient(circle at 50% 25%, #eff1f4 0%, #dcdfe4 48%, #c7cbd1 100%);
+            --wheel-bg: radial-gradient(circle at 50% 42%, #ffffff 0%, #f3f4f6 65%, #e2e5ea 100%);
+            --wheel-ring: #b3b9c4;
+            --wheel-label: #7d8490;
+            --center-bg: linear-gradient(145deg, #cfd3da 0%, #e4e7ec 50%, #f5f6f8 100%);
+            --top-bar-color: #6b7280;
         }
 
         [data-lcd-theme="amber"] {
@@ -44,6 +59,24 @@
             --lcd-grid: rgba(22, 24, 22, 0.045);
         }
 
+        /* Mode Malam: Nuansa Biru Keabu-abuan (iPod Blue-Slate / Gray Navigation) */
+        body[data-night-mode="true"] {
+            --chassis-bg:
+                repeating-linear-gradient(
+                    90deg,
+                    rgba(255, 255, 255, 0.03) 0px,
+                    rgba(255, 255, 255, 0.03) 1px,
+                    rgba(0, 0, 0, 0.08) 1px,
+                    rgba(0, 0, 0, 0.08) 2px
+                ),
+                radial-gradient(circle at 50% 22%, #2a3b4c 0%, #1c2836 52%, #121a24 100%);
+            --wheel-bg: radial-gradient(circle at 50% 40%, #64748b 0%, #4b5c70 65%, #374556 100%);
+            --wheel-ring: #7c90a8;
+            --wheel-label: #cbd5e1;
+            --center-bg: linear-gradient(145deg, #2d3c4e 0%, #3d5066 55%, #4d627a 100%);
+            --top-bar-color: #94a3b8;
+        }
+
         * {
             box-sizing: border-box;
             user-select: none;
@@ -52,13 +85,14 @@
         }
 
         html, body {
-            width: 100vw;
-            height: 100vh;
+            width: 100%;
+            min-height: 100vh;
             height: 100dvh;
             margin: 0;
             padding: 0;
             overflow: hidden;
             font-family: 'Share Tech Mono', monospace;
+            background-color: #121a24;
         }
 
         .ipod-fullscreen-chassis {
@@ -69,22 +103,13 @@
             flex-direction: column;
             align-items: center;
             justify-content: space-between;
-            padding:
-                max(14px, calc(env(safe-area-inset-top) + 8px))
-                max(14px, calc(env(safe-area-inset-right) + 8px))
-                max(14px, calc(env(safe-area-inset-bottom) + 10px))
-                max(14px, calc(env(safe-area-inset-left) + 8px));
-            background:
-                repeating-linear-gradient(
-                    90deg,
-                    rgba(255, 255, 255, 0.05) 0px,
-                    rgba(255, 255, 255, 0.05) 1px,
-                    rgba(0, 0, 0, 0.025) 1px,
-                    rgba(0, 0, 0, 0.025) 2px
-                ),
-                radial-gradient(circle at 50% 25%, #eff1f4 0%, #dcdfe4 48%, #c7cbd1 100%);
+            padding-top: max(48px, calc(env(safe-area-inset-top) + 22px));
+            padding-right: max(16px, calc(env(safe-area-inset-right) + 12px));
+            padding-bottom: max(18px, calc(env(safe-area-inset-bottom) + 10px));
+            padding-left: max(16px, calc(env(safe-area-inset-left) + 12px));
+            background: var(--chassis-bg);
             position: relative;
-            transition: background 0.45s ease;
+            transition: background 0.35s ease;
         }
 
         body.screensaver-mode .ipod-fullscreen-chassis {
@@ -98,16 +123,7 @@
         }
 
         .top-hardware-bar {
-            transition: opacity 0.35s ease;
-        }
-
-        body.screensaver-mode .calculator-lcd-frame {
-            box-shadow:
-                inset 0 3px 8px rgba(0, 0, 0, 0.9),
-                0 0 0 1px #171717;
-        }
-
-        .top-hardware-bar {
+            transition: opacity 0.35s ease, color 0.3s ease;
             width: 100%;
             max-width: 680px;
             display: flex;
@@ -117,27 +133,34 @@
             font-size: 10px;
             font-weight: 700;
             letter-spacing: 1.5px;
-            color: #6b7280;
+            color: var(--top-bar-color);
             flex-shrink: 0;
+        }
+
+        body.screensaver-mode .calculator-lcd-frame {
+            box-shadow:
+                inset 0 3px 8px rgba(0, 0, 0, 0.9),
+                0 0 0 1px #171717;
         }
 
         .calculator-lcd-frame {
             width: 100%;
             max-width: 680px;
-            height: 44vh;
-            height: 44dvh;
-            min-height: 220px;
-            max-height: 360px;
+            height: 41vh;
+            height: 41dvh;
+            min-height: 210px;
+            max-height: 340px;
             background: #232629;
             border-radius: 10px;
-            padding: clamp(6px, 1.2vh, 10px);
+            padding: clamp(6px, 1.1vh, 9px);
             box-shadow:
                 inset 0 3px 8px rgba(0, 0, 0, 0.85),
-                0 1px 0 rgba(255, 255, 255, 0.9),
-                0 0 0 1px #9ca3af;
+                0 1px 0 rgba(255, 255, 255, 0.35),
+                0 0 0 1px rgba(148, 163, 184, 0.55);
             display: flex;
             flex-direction: column;
             position: relative;
+            margin-top: 8px;
         }
 
         .lcd-panel {
@@ -241,21 +264,22 @@
         }
 
         .click-wheel {
-            width: clamp(210px, 34vh, 290px);
-            height: clamp(210px, 34vh, 290px);
+            width: clamp(210px, 33vh, 285px);
+            height: clamp(210px, 33vh, 285px);
             border-radius: 50%;
-            background: radial-gradient(circle at 50% 42%, #ffffff 0%, #f3f4f6 65%, #e2e5ea 100%);
+            background: var(--wheel-bg);
             box-shadow:
-                inset 0 2px 5px rgba(255, 255, 255, 0.95),
-                inset 0 -4px 8px rgba(0, 0, 0, 0.09),
-                0 6px 18px rgba(15, 23, 42, 0.14),
-                0 0 0 1.5px #b3b9c4;
+                inset 0 2px 5px rgba(255, 255, 255, 0.55),
+                inset 0 -4px 8px rgba(0, 0, 0, 0.16),
+                0 6px 18px rgba(15, 23, 42, 0.18),
+                0 0 0 1.5px var(--wheel-ring);
             position: relative;
             display: flex;
             align-items: center;
             justify-content: center;
             touch-action: none;
             cursor: grab;
+            transition: background 0.35s ease, box-shadow 0.35s ease;
         }
 
         .click-wheel:active {
@@ -277,12 +301,8 @@
         }
 
         .wheel-btn {
-            transition: opacity 0.3s ease, color 0.1s ease, transform 0.1s ease;
-        }
-
-        .wheel-btn {
             position: absolute;
-            color: #7d8490;
+            color: var(--wheel-label);
             font-family: 'Orbitron', sans-serif;
             font-weight: 700;
             font-size: clamp(10px, 1.5vh, 13px);
@@ -293,11 +313,15 @@
             width: 68px;
             height: 44px;
             cursor: pointer;
-            transition: color 0.1s ease, transform 0.1s ease;
+            transition: opacity 0.3s ease, color 0.2s ease, transform 0.1s ease;
         }
 
         .wheel-btn:active {
             color: #1f2937;
+        }
+
+        body[data-night-mode="true"] .wheel-btn:active {
+            color: #ffffff;
         }
 
         .btn-menu { top: 12px; left: 50%; transform: translateX(-50%); }
@@ -324,13 +348,13 @@
                     rgba(0, 0, 0, 0.03) 1px,
                     rgba(0, 0, 0, 0.03) 2px
                 ),
-                linear-gradient(145deg, #cfd3da 0%, #e4e7ec 50%, #f5f6f8 100%);
+                var(--center-bg);
             box-shadow:
                 inset 0 2px 5px rgba(110, 118, 130, 0.45),
-                inset 0 -1px 2px rgba(255, 255, 255, 0.95),
-                0 0 0 1.5px #aeb5c0;
+                inset 0 -1px 2px rgba(255, 255, 255, 0.45),
+                0 0 0 1.5px var(--wheel-ring);
             cursor: pointer;
-            transition: transform 0.08s ease, box-shadow 0.08s ease;
+            transition: transform 0.08s ease, box-shadow 0.08s ease, background 0.35s ease;
             z-index: 5;
         }
 
@@ -398,21 +422,21 @@
         }
     </style>
 </head>
-<body data-lcd-theme="olive">
+<body data-lcd-theme="olive" data-night-mode="false">
 
     <main class="ipod-fullscreen-chassis">
 
         <header class="top-hardware-bar">
             <div class="flex items-center gap-2">
-                <span class="text-slate-700">iPod</span>
-                <span class="text-[9px] px-1.5 py-0.5 rounded bg-black/5 border border-black/10 text-slate-600">CALC-LCD</span>
+                <span class="font-bold">iPod</span>
+                <span class="text-[9px] px-1.5 py-0.5 rounded bg-black/10 border border-current/20">CALC-LCD</span>
             </div>
 
             <div class="flex items-center gap-2">
-                <button id="btnThemeToggle" class="px-2.5 py-1 rounded bg-white/60 hover:bg-white/90 active:scale-95 border border-slate-400/60 text-slate-700 transition cursor-pointer">
+                <button id="btnThemeToggle" class="px-2.5 py-1 rounded bg-white/70 hover:bg-white/95 active:scale-95 border border-slate-400/60 text-slate-800 transition cursor-pointer">
                     LCD LIGHT
                 </button>
-                <button id="btnHoldToggle" class="px-2.5 py-1 rounded bg-white/60 hover:bg-white/90 active:scale-95 border border-slate-400/60 text-slate-700 transition cursor-pointer">
+                <button id="btnHoldToggle" class="px-2.5 py-1 rounded bg-white/70 hover:bg-white/95 active:scale-95 border border-slate-400/60 text-slate-800 transition cursor-pointer">
                     HOLD: OFF
                 </button>
             </div>
@@ -797,6 +821,7 @@
         const state = {
             isLocked: false,
             shuffle: false,
+            nightMode: false,
             themeIndex: 0,
             currentQueue: [],
             currentTrackIndex: 0,
@@ -812,9 +837,10 @@
                         { label: '03. PENGINGAT SUPABASE', action: 'submenu', target: 'reminders' },
                         { label: '04. SEDANG DIPUTAR', action: 'now-playing' },
                         { label: '05. CAHAYA LCD', action: 'cycle-theme', getVal: () => THEME_NAMES[LCD_THEMES[state.themeIndex]] },
-                        { label: '06. ACAK LAGU', action: 'toggle-shuffle', getVal: () => state.shuffle ? 'AKTIF' : 'MATI' },
-                        { label: '07. SUARA KLIK', action: 'toggle-click', getVal: () => synth.clickEnabled ? 'AKTIF' : 'MATI' },
-                        { label: '08. SINKRON SUPABASE', action: 'sync-supabase', getVal: () => supabaseStore.statusLabel }
+                        { label: '06. MODE MALAM', action: 'toggle-night', getVal: () => state.nightMode ? 'AKTIF' : 'MATI' },
+                        { label: '07. ACAK LAGU', action: 'toggle-shuffle', getVal: () => state.shuffle ? 'AKTIF' : 'MATI' },
+                        { label: '08. SUARA KLIK', action: 'toggle-click', getVal: () => synth.clickEnabled ? 'AKTIF' : 'MATI' },
+                        { label: '09. SINKRON SUPABASE', action: 'sync-supabase', getVal: () => supabaseStore.statusLabel }
                     ]
                 }
             ]
@@ -1150,6 +1176,13 @@
             renderLCDScreen();
         }
 
+        function toggleNightMode() {
+            state.nightMode = !state.nightMode;
+            document.body.setAttribute('data-night-mode', state.nightMode ? 'true' : 'false');
+            synth.playClick(state.nightMode ? 1.18 : 0.92);
+            renderLCDScreen();
+        }
+
         function handleWheelStep(dir) {
             if (state.isLocked) return;
             const view = currentView();
@@ -1219,6 +1252,8 @@
                 renderLCDScreen();
             } else if (item.action === 'cycle-theme') {
                 cycleLCDTheme();
+            } else if (item.action === 'toggle-night') {
+                toggleNightMode();
             } else if (item.action === 'toggle-shuffle') {
                 state.shuffle = !state.shuffle;
                 renderLCDScreen();
