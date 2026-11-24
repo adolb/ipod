@@ -2,14 +2,17 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="iPod Calc">
     <title>iPod Classic Silver - Calculator LCD Edition</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Share+Tech+Mono&family=VT323&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* Default Casio/TI Olive-Silver Calculator LCD Palette */
             --lcd-bg: #a3ad96;
             --lcd-bg-dark: #939e86;
             --lcd-ink: #171c14;
@@ -17,7 +20,6 @@
             --lcd-grid: rgba(23, 28, 20, 0.045);
         }
 
-        /* Alternative LCD Backlight Themes */
         [data-lcd-theme="amber"] {
             --lcd-bg: #d99b38;
             --lcd-bg-dark: #c48625;
@@ -52,21 +54,26 @@
         html, body {
             width: 100vw;
             height: 100vh;
+            height: 100dvh;
             margin: 0;
             padding: 0;
             overflow: hidden;
             font-family: 'Share Tech Mono', monospace;
         }
 
-        /* Fullscreen Frameless iPhone 6s Anodized Brushed Silver Aluminum Surface */
         .ipod-fullscreen-chassis {
             width: 100vw;
             height: 100vh;
+            height: 100dvh;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: space-between;
-            padding: clamp(14px, 2.8vh, 28px) clamp(14px, 4vw, 36px);
+            padding:
+                max(14px, calc(env(safe-area-inset-top) + 8px))
+                max(14px, calc(env(safe-area-inset-right) + 8px))
+                max(14px, calc(env(safe-area-inset-bottom) + 10px))
+                max(14px, calc(env(safe-area-inset-left) + 8px));
             background:
                 repeating-linear-gradient(
                     90deg,
@@ -80,7 +87,6 @@
             transition: background 0.45s ease;
         }
 
-        /* Mode Screensaver / Stealth 15 Detik: bodi silver dan navigasi menjadi hitam, layar tetap terlihat */
         body.screensaver-mode .ipod-fullscreen-chassis {
             background: #050505;
         }
@@ -101,7 +107,6 @@
                 0 0 0 1px #171717;
         }
 
-        /* Top Subtle Hardware Strip (Hold Switch & LCD Light Quick Trigger) */
         .top-hardware-bar {
             width: 100%;
             max-width: 680px;
@@ -116,11 +121,11 @@
             flex-shrink: 0;
         }
 
-        /* Recessed Calculator LCD Module */
         .calculator-lcd-frame {
             width: 100%;
             max-width: 680px;
             height: 44vh;
+            height: 44dvh;
             min-height: 220px;
             max-height: 360px;
             background: #232629;
@@ -135,7 +140,6 @@
             position: relative;
         }
 
-        /* Authentic Monochrome Calculator LCD Glass */
         .lcd-panel {
             width: 100%;
             height: 100%;
@@ -157,7 +161,6 @@
             transition: background-color 0.25s ease, color 0.25s ease;
         }
 
-        /* Subtle Diagonal Glass Glare */
         .lcd-panel::after {
             content: '';
             position: absolute;
@@ -167,7 +170,6 @@
             z-index: 20;
         }
 
-        /* 7-Segment / Digital Readout Styling */
         .font-calc-digit {
             font-family: 'Orbitron', 'Share Tech Mono', monospace;
             font-variant-numeric: tabular-nums;
@@ -179,7 +181,6 @@
             letter-spacing: 0.04em;
         }
 
-        /* LCD Top Annunciator Bar (Casio/TI style badges) */
         .lcd-status-bar {
             display: flex;
             align-items: center;
@@ -205,7 +206,6 @@
             color: var(--lcd-ghost);
         }
 
-        /* Inverted LCD Selection Bar (Classic Dot-Matrix Calculator Highlight) */
         .calc-menu-row {
             display: flex;
             align-items: center;
@@ -231,7 +231,6 @@
             scrollbar-width: none;
         }
 
-        /* Click Wheel Assembly (Scaled Responsively to Viewport) */
         .wheel-stage {
             flex: 1;
             width: 100%;
@@ -281,7 +280,6 @@
             transition: opacity 0.3s ease, color 0.1s ease, transform 0.1s ease;
         }
 
-        /* Engraved Click Wheel Labels */
         .wheel-btn {
             position: absolute;
             color: #7d8490;
@@ -314,7 +312,6 @@
         .btn-play { bottom: 12px; left: 50%; transform: translateX(-50%); }
         .btn-play:active { transform: translateX(-50%) scale(0.93); }
 
-        /* Brushed Silver Anodized Center Button (iPhone 6s Metallic Finish) */
         .center-button {
             width: 36%;
             height: 36%;
@@ -352,7 +349,6 @@
             transition: background 0.45s ease, box-shadow 0.45s ease;
         }
 
-        /* Calculator Segmented Progress & Level Bars */
         .calc-bar-container {
             display: grid;
             grid-template-columns: repeat(20, 1fr);
@@ -371,7 +367,6 @@
             background-color: var(--lcd-ink);
         }
 
-        /* Ghost 88:88 watermark behind main digital timer */
         .digit-stack {
             position: relative;
             display: inline-block;
@@ -405,10 +400,8 @@
 </head>
 <body data-lcd-theme="olive">
 
-    <!-- Fullscreen Frameless Brushed Silver Aluminum Body -->
     <main class="ipod-fullscreen-chassis">
 
-        <!-- Top Engraved Branding & Hardware Toggles -->
         <header class="top-hardware-bar">
             <div class="flex items-center gap-2">
                 <span class="text-slate-700">iPod</span>
@@ -425,10 +418,8 @@
             </div>
         </header>
 
-        <!-- Retro Calculator LCD Display -->
         <section class="calculator-lcd-frame">
             <div class="lcd-panel" id="lcdPanel">
-                <!-- Calculator Top Status & Annunciator Strip -->
                 <div class="lcd-status-bar">
                     <div class="flex items-center gap-1.5">
                         <span id="badgePlay" class="lcd-badge">STOP</span>
@@ -442,7 +433,6 @@
 
                     <div class="flex items-center gap-2">
                         <span id="lcdVolIndicator" class="font-calc-digit text-[10px] sm:text-xs">VOL:80</span>
-                        <!-- Segmented Calculator Battery Gauge -->
                         <div class="flex items-center">
                             <div class="flex gap-[1px] border border-current p-[1px] h-3">
                                 <div class="w-1 h-full bg-current"></div>
@@ -455,12 +445,8 @@
                     </div>
                 </div>
 
-                <!-- Dynamic LCD Matrix Area -->
-                <div id="lcdScreenBody" class="flex-1 flex flex-col overflow-hidden relative">
-                    <!-- Rendered dynamically via JavaScript -->
-                </div>
+                <div id="lcdScreenBody" class="flex-1 flex flex-col overflow-hidden relative"></div>
 
-                <!-- Bottom Calculator Function Key Legend -->
                 <div class="flex items-center justify-between px-2.5 py-1 border-t border-current/30 text-[10px] font-calc-digit opacity-85 shrink-0">
                     <span>[WHEEL] GULIR/VOL</span>
                     <span id="lcdTrackCounter">TRK 01/12</span>
@@ -469,13 +455,10 @@
             </div>
         </section>
 
-        <!-- Iconic Click Wheel Section -->
         <section class="wheel-stage">
             <div class="click-wheel" id="clickWheel">
-                <!-- MENU -->
                 <div class="wheel-btn btn-menu" id="btnMenu">MENU</div>
 
-                <!-- NEXT / FF -->
                 <div class="wheel-btn btn-next" id="btnNext" aria-label="Lagu Berikutnya">
                     <svg width="18" height="14" viewBox="0 0 24 16" fill="currentColor">
                         <polygon points="0,0 10,8 0,16"/>
@@ -484,7 +467,6 @@
                     </svg>
                 </div>
 
-                <!-- PREV / REW -->
                 <div class="wheel-btn btn-prev" id="btnPrev" aria-label="Lagu Sebelumnya">
                     <svg width="18" height="14" viewBox="0 0 24 16" fill="currentColor">
                         <rect x="1" y="0" width="3" height="16"/>
@@ -493,7 +475,6 @@
                     </svg>
                 </div>
 
-                <!-- PLAY / PAUSE -->
                 <div class="wheel-btn btn-play" id="btnPlay" aria-label="Putar atau Jeda">
                     <svg width="20" height="14" viewBox="0 0 26 16" fill="currentColor">
                         <polygon points="1,0 11,8 1,16"/>
@@ -502,7 +483,6 @@
                     </svg>
                 </div>
 
-                <!-- Center Silver Select Button -->
                 <div class="center-button" id="btnSelect" aria-label="Pilih"></div>
             </div>
         </section>
@@ -510,11 +490,6 @@
     </main>
 
     <script>
-        /**
-         * ============================================================================
-         * 0. KONFIGURASI SUPABASE & SINKRONISASI DATA DENGAN FALLBACK AMAN
-         * ============================================================================
-         */
         const SUPABASE_CONFIG = {
             url: 'https://awlxjzfadktcthbumxle.supabase.co',
             key: 'sb_publishable_LnE9IH5KKDzdV-gj9tIb6w_uOGVZi4o',
@@ -551,11 +526,6 @@
                 .toUpperCase() || rawName.toUpperCase();
         }
 
-        /**
-         * ============================================================================
-         * 1. PEMUTAR AUDIO SUPABASE & MECHANICAL CLICKER
-         * ============================================================================
-         */
         class CalculatorSynthEngine {
             constructor() {
                 this.ctx = null;
@@ -564,7 +534,7 @@
                 this.audioEl.crossOrigin = 'anonymous';
                 this.audioEl.preload = 'metadata';
 
-                this.volume = 0.8; // 0.0 to 1.0
+                this.volume = 0.8;
                 this.clickEnabled = true;
                 this.isPlaying = false;
                 this.currentSong = null;
@@ -650,9 +620,7 @@
 
                     osc.start(now);
                     osc.stop(now + 0.015);
-                } catch (e) {
-                    // Abaikan jika browser belum mengizinkan audio
-                }
+                } catch (e) {}
             }
 
             updateSpectrumFromWave() {
@@ -740,11 +708,6 @@
 
         const synth = new CalculatorSynthEngine();
 
-        /**
-         * ============================================================================
-         * 2. SINKRONISASI MUSIK, CATATAN & PENGINGAT DARI SUPABASE
-         * ============================================================================
-         */
         function getAllTracks() {
             return supabaseStore.cloudTracks;
         }
@@ -823,11 +786,6 @@
             renderLCDScreen();
         }
 
-        /**
-         * ============================================================================
-         * 3. STATE NAVIGASI & TEMA LCD (BAHASA INDONESIA)
-         * ============================================================================
-         */
         const LCD_THEMES = ['olive', 'amber', 'blue', 'silver'];
         const THEME_NAMES = {
             olive: 'HIJAU-LCD',
@@ -950,11 +908,6 @@
             return null;
         }
 
-        /**
-         * ============================================================================
-         * 4. RENDER LAYAR LCD KALKULATOR
-         * ============================================================================
-         */
         const lcdHeaderTitleEl = document.getElementById('lcdHeaderTitle');
         const lcdScreenBodyEl = document.getElementById('lcdScreenBody');
         const lcdVolIndicatorEl = document.getElementById('lcdVolIndicator');
@@ -1134,11 +1087,6 @@
             nextTrack();
         };
 
-        /**
-         * ============================================================================
-         * 5. KONTROL PEMUTARAN, SCREENSAVER 15 DETIK & NAVIGASI
-         * ============================================================================
-         */
         const IDLE_SCREENSAVER_MS = 15000;
         let idleScreensaverTimer = null;
 
@@ -1305,11 +1253,6 @@
             }
         }
 
-        /**
-         * ============================================================================
-         * 6. EVENT LISTENERS CLICK WHEEL (ROTASI MELINGKAR, SENTUH, SCROLL, KEYBOARD)
-         * ============================================================================
-         */
         ['pointerdown', 'pointermove', 'wheel', 'keydown', 'touchstart'].forEach(evt => {
             window.addEventListener(evt, wakeFromScreensaver, { passive: true });
         });
@@ -1430,7 +1373,6 @@
             else if (e.key === 'ArrowLeft') { e.preventDefault(); prevTrack(); }
         });
 
-        // Render awal layar kalkulator, mulai timer screensaver 15 detik, lalu sinkronkan data Supabase
         renderLCDScreen();
         wakeFromScreensaver();
         syncSupabaseData();
