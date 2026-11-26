@@ -7,7 +7,9 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="iPod Calc">
-    <title>iPod Calc</title>
+    <meta name="theme-color" content="#121215">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='38' fill='%2318181b'/%3E%3Crect x='26' y='20' width='128' height='62' rx='8' fill='%23a3ad96'/%3E%3Ccircle cx='90' cy='128' r='36' fill='%2327272a' stroke='%2352525b' stroke-width='3'/%3E%3Ccircle cx='90' cy='128' r='13' fill='%2318181b'/%3E%3C/svg%3E">
+    <title>iPod Classic - Calculator LCD Edition</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Share+Tech+Mono&family=VT323&display=swap" rel="stylesheet">
@@ -16,6 +18,7 @@
             --lcd-bg: #a3ad96;
             --lcd-bg-dark: #939e86;
             --lcd-ink: #171c14;
+            --lcd-line: rgba(23, 28, 20, 0.32);
             --lcd-ghost: rgba(23, 28, 20, 0.08);
             --lcd-grid: rgba(23, 28, 20, 0.045);
 
@@ -56,6 +59,7 @@
             --lcd-bg: #d99b38;
             --lcd-bg-dark: #c48625;
             --lcd-ink: #241404;
+            --lcd-line: rgba(36, 20, 4, 0.32);
             --lcd-ghost: rgba(36, 20, 4, 0.09);
             --lcd-grid: rgba(36, 20, 4, 0.05);
         }
@@ -64,6 +68,7 @@
             --lcd-bg: #8eb4c9;
             --lcd-bg-dark: #789fb5;
             --lcd-ink: #0c1d29;
+            --lcd-line: rgba(12, 29, 41, 0.32);
             --lcd-ghost: rgba(12, 29, 41, 0.09);
             --lcd-grid: rgba(12, 29, 41, 0.05);
         }
@@ -72,6 +77,7 @@
             --lcd-bg: #c6cbc4;
             --lcd-bg-dark: #b3b9b1;
             --lcd-ink: #161816;
+            --lcd-line: rgba(22, 24, 22, 0.32);
             --lcd-ghost: rgba(22, 24, 22, 0.08);
             --lcd-grid: rgba(22, 24, 22, 0.045);
         }
@@ -115,29 +121,34 @@
             user-select: none;
             -webkit-user-select: none;
             -webkit-touch-callout: none;
+            -webkit-tap-highlight-color: transparent;
         }
 
         html, body {
+            position: fixed;
+            inset: 0;
             width: 100%;
-            min-height: 100vh;
+            height: 100%;
             height: 100dvh;
             margin: 0;
             padding: 0;
             overflow: hidden;
+            overscroll-behavior: none;
+            touch-action: none;
             font-family: 'Share Tech Mono', monospace;
             background-color: var(--body-outer);
             transition: background-color 0.4s ease;
         }
 
         .ipod-fullscreen-chassis {
-            width: 100vw;
-            height: 100vh;
+            width: 100%;
+            height: 100%;
             height: 100dvh;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: space-between;
-            padding-top: max(36px, calc(env(safe-area-inset-top) + 18px));
+            padding-top: max(28px, calc(env(safe-area-inset-top) + 14px));
             padding-right: max(18px, calc(env(safe-area-inset-right) + 14px));
             padding-bottom: max(22px, calc(env(safe-area-inset-bottom) + 14px));
             padding-left: max(18px, calc(env(safe-area-inset-left) + 14px));
@@ -153,10 +164,10 @@
         .calculator-lcd-frame {
             width: 100%;
             max-width: 680px;
-            height: 43vh;
-            height: 43dvh;
-            min-height: 225px;
-            max-height: 365px;
+            height: 44vh;
+            height: 44dvh;
+            min-height: 228px;
+            max-height: 375px;
             background: var(--bezel-bg);
             border-radius: 14px;
             padding: clamp(8px, 1.3vh, 12px);
@@ -215,23 +226,88 @@
         }
 
         .lcd-status-bar {
+            height: 28px;
+            min-height: 28px;
+            max-height: 28px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 6px 10px;
+            gap: 6px;
+            padding: 0 10px;
             border-bottom: 1.5px solid var(--lcd-ink);
-            font-size: clamp(11px, 1.6vh, 13px);
+            font-size: 11px;
             font-weight: 700;
+            white-space: nowrap;
+            overflow: hidden;
             flex-shrink: 0;
+        }
+
+        .lcd-status-left {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            flex-shrink: 0;
+            white-space: nowrap;
+        }
+
+        .lcd-status-title {
+            flex: 1;
+            min-width: 0;
+            text-align: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .lcd-status-right {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-shrink: 0;
+            white-space: nowrap;
+        }
+
+        .lcd-footer-bar {
+            height: 20px;
+            min-height: 20px;
+            max-height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 10px;
+            border-top: 1px solid var(--lcd-line);
+            font-size: 10px;
+            opacity: 0.85;
+            white-space: nowrap;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .lcd-divider-b {
+            border-bottom: 1px solid var(--lcd-line);
+        }
+
+        .lcd-divider-t {
+            border-top: 1px solid var(--lcd-line);
+        }
+
+        .lcd-box-border {
+            border: 1px solid var(--lcd-line);
         }
 
         .lcd-badge {
             border: 1px solid var(--lcd-ink);
             padding: 0 4px;
-            font-size: 9px;
-            line-height: 1.35;
+            height: 15px;
+            font-size: 8.5px;
+            line-height: 13px;
             font-family: 'Orbitron', sans-serif;
             font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 2px;
+            white-space: nowrap;
+            flex-shrink: 0;
         }
 
         .lcd-badge.ghost {
@@ -239,21 +315,59 @@
             color: var(--lcd-ghost);
         }
 
+        .lcd-toast {
+            position: absolute;
+            left: 50%;
+            bottom: 26px;
+            transform: translateX(-50%);
+            background-color: var(--lcd-ink);
+            color: var(--lcd-bg);
+            border: 1.5px solid var(--lcd-bg);
+            padding: 4px 10px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            white-space: nowrap;
+            z-index: 30;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+            pointer-events: none;
+        }
+
         .calc-menu-row {
             display: flex;
             align-items: center;
             justify-content: space-between;
+            gap: 8px;
             padding: clamp(5px, 0.95vh, 8px) 10px;
             border-bottom: 1px dashed var(--lcd-ghost);
             font-family: 'VT323', monospace;
             font-size: clamp(20px, 2.8vh, 25px);
             line-height: 1.12;
             cursor: pointer;
+            min-width: 0;
         }
 
         .calc-menu-row.active {
             background-color: var(--lcd-ink);
             color: var(--lcd-bg);
+        }
+
+        .calc-menu-label-wrap {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            overflow: hidden;
+        }
+
+        .calc-menu-text {
+            flex: 1;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
         .no-scrollbar::-webkit-scrollbar {
@@ -320,6 +434,7 @@
             height: 46px;
             cursor: pointer;
             transition: opacity 0.3s ease, color 0.18s ease, transform 0.1s ease;
+            z-index: 3;
         }
 
         .wheel-btn:active {
@@ -405,42 +520,100 @@
             color: var(--lcd-ink);
         }
 
-        .calc-detail-box {
-            font-family: 'VT323', monospace;
-            font-size: clamp(18px, 2.5vh, 22px);
-            line-height: 1.25;
-            white-space: pre-wrap;
-            word-break: break-word;
-            user-select: text;
-            -webkit-user-select: text;
+        .nokia-reader-shell {
+            flex: 1;
+            height: 100%;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 6px 10px;
+            overflow: hidden;
         }
 
-        #calcDetailScroll {
-            touch-action: pan-y;
-            overscroll-behavior: contain;
+        .nokia-reader-header {
+            height: 22px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--lcd-line);
+            margin-bottom: 4px;
+        }
+
+        .nokia-reader-body-slot {
+            flex: 1;
+            min-height: 0;
+            overflow: hidden;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .nokia-page-body {
+            font-family: 'Share Tech Mono', 'VT323', monospace;
+            font-size: clamp(12px, 1.75vh, 14px);
+            line-height: 1.3;
+            white-space: pre-wrap;
+            word-break: break-word;
+            overflow: hidden;
+            width: 100%;
+        }
+
+        .nokia-reader-footer {
+            height: 18px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-top: 1px solid var(--lcd-line);
+            margin-top: 4px;
+        }
+
+        @media (orientation: landscape) and (max-height: 500px) {
+            .ipod-fullscreen-chassis {
+                flex-direction: row;
+                justify-content: space-evenly;
+                padding-top: 12px;
+                padding-bottom: 12px;
+            }
+            .calculator-lcd-frame {
+                width: 52vw;
+                height: 84dvh;
+                max-height: none;
+            }
+            .wheel-stage {
+                width: 40vw;
+            }
+            .click-wheel {
+                width: min(74dvh, 250px);
+                height: min(74dvh, 250px);
+            }
         }
     </style>
 </head>
 <body data-lcd-theme="olive" data-night-mode="false">
+
+    <input type="file" id="audioUploadInput" accept="audio/*,.mp3,.wav,.m4a,.ogg,.aac,.flac" multiple style="display:none;">
 
     <main class="ipod-fullscreen-chassis">
 
         <section class="calculator-lcd-frame">
             <div class="lcd-panel" id="lcdPanel">
                 <div class="lcd-status-bar">
-                    <div class="flex items-center gap-1.5">
+                    <div class="lcd-status-left">
                         <span id="badgePlay" class="lcd-badge">SIAP</span>
                         <span id="badgeHold" class="lcd-badge ghost">HOLD</span>
                         <span id="badgeShuffle" class="lcd-badge ghost">SHFL</span>
+                        <span id="badgeRepeat" class="lcd-badge ghost">RPT</span>
                     </div>
 
-                    <div id="lcdHeaderTitle" class="font-calc-digit text-xs sm:text-sm font-bold uppercase tracking-wider truncate px-2">
+                    <div id="lcdHeaderTitle" class="lcd-status-title font-calc-digit text-xs sm:text-sm font-bold uppercase tracking-wider">
                         MENU UTAMA
                     </div>
 
-                    <div class="flex items-center gap-2">
+                    <div class="lcd-status-right">
                         <span id="lcdVolIndicator" class="font-calc-digit text-[10px] sm:text-xs">VOL:80</span>
-                        <div class="flex items-center">
+                        <div class="flex items-center shrink-0">
                             <div class="flex gap-[1px] border border-current p-[1px] h-3">
                                 <div class="w-1 h-full bg-current"></div>
                                 <div class="w-1 h-full bg-current"></div>
@@ -454,10 +627,12 @@
 
                 <div id="lcdScreenBody" class="flex-1 flex flex-col overflow-hidden relative"></div>
 
-                <div class="flex items-center justify-between px-2.5 py-1 border-t border-current/30 text-[10px] font-calc-digit opacity-85 shrink-0">
-                    <span>[WHEEL] GULIR/VOL</span>
+                <div id="lcdToast" class="lcd-toast hidden"></div>
+
+                <div class="lcd-footer-bar font-calc-digit">
+                    <span id="lcdFooterLeft">[WHEEL] GULIR</span>
                     <span id="lcdTrackCounter">TRK 00/01</span>
-                    <span>[TENGAH] PILIH</span>
+                    <span id="lcdFooterRight">[TENGAH] PILIH</span>
                 </div>
             </div>
         </section>
@@ -497,12 +672,22 @@
     </main>
 
     <script>
+        const STORAGE_KEY = 'ipod_calc_state_v2';
+
         const SUPABASE_CONFIG = {
             url: 'https://awlxjzfadktcthbumxle.supabase.co',
             key: 'sb_publishable_LnE9IH5KKDzdV-gj9tIb6w_uOGVZi4o',
             bucket: 'documents',
             folder: 'uploads'
         };
+
+        function triggerHaptic(pattern = 8) {
+            try {
+                if (typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function') {
+                    navigator.vibrate(pattern);
+                }
+            } catch (e) {}
+        }
 
         let supabaseClient = null;
         try {
@@ -512,31 +697,98 @@
                 });
             }
         } catch (err) {
-            console.warn('Inisialisasi Supabase gagal, memakai mode lokal/fallback:', err);
+            console.warn('Inisialisasi Supabase gagal, memakai mode lokal:', err);
         }
 
         const supabaseStore = {
             connected: false,
             statusLabel: 'LOKAL',
+            uploadStatus: 'PILIH',
+            isUploading: false,
             cloudTracks: [],
+            localTracks: [],
+            folders: [],
             notes: [],
             reminders: []
         };
 
-        function cleanUploadName(rawName) {
-            if (!rawName) return 'BERKAS TANPA NAMA';
-            return rawName
+        function extractNewestTimestamp(row) {
+            if (!row || typeof row !== 'object') return NaN;
+            if (row.created_at) {
+                const t = Date.parse(row.created_at);
+                if (!Number.isNaN(t)) return t;
+            }
+            if (row.reminder_date) {
+                const timePart = row.reminder_time ? String(row.reminder_time).substring(0, 8) : '00:00:00';
+                const t = Date.parse(`${row.reminder_date}T${timePart}`);
+                if (!Number.isNaN(t)) return t;
+            }
+            return NaN;
+        }
+
+        function sortNewestFirst(rows) {
+            if (!Array.isArray(rows)) return [];
+            return [...rows].sort((a, b) => {
+                const ta = extractNewestTimestamp(a);
+                const tb = extractNewestTimestamp(b);
+                if (!Number.isNaN(ta) && !Number.isNaN(tb) && ta !== tb) {
+                    return tb - ta;
+                }
+                const ida = Number(a?.id);
+                const idb = Number(b?.id);
+                if (!Number.isNaN(ida) && !Number.isNaN(idb) && ida !== idb) {
+                    return idb - ida;
+                }
+                return String(b?.id ?? '').localeCompare(String(a?.id ?? ''));
+            });
+        }
+
+        function parseTrackMetadata(rawName, folderName = 'UTAMA') {
+            if (!rawName) {
+                return { title: 'BERKAS TANPA NAMA', artist: 'SUPABASE STORAGE', folder: folderName };
+            }
+            const clean = rawName
                 .replace(/^\d+_/, '')
                 .replace(/\.[^/.]+$/, '')
-                .replace(/[_-]+/g, ' ')
+                .replace(/_/g, ' ')
+                .trim();
+
+            const dashMatch = clean.match(/^(.+?)\s+-\s+(.+)$/);
+            if (dashMatch) {
+                return {
+                    artist: dashMatch[1].trim().toUpperCase(),
+                    title: dashMatch[2].trim().toUpperCase(),
+                    folder: folderName.toUpperCase()
+                };
+            }
+
+            return {
+                title: clean.replace(/-/g, ' ').trim().toUpperCase() || rawName.toUpperCase(),
+                artist: folderName !== 'UTAMA' ? `FOLDER ${folderName.toUpperCase()}` : 'SUPABASE STORAGE',
+                folder: folderName.toUpperCase()
+            };
+        }
+
+        function sanitizeUploadFilename(originalName) {
+            const parts = originalName.split('.');
+            const ext = parts.length > 1 ? parts.pop().toLowerCase().replace(/[^a-z0-9]/g, '') : 'mp3';
+            const base = parts.join('.')
+                .replace(/[^\w\s-]/g, '')
                 .trim()
-                .toUpperCase() || rawName.toUpperCase();
+                .replace(/\s+/g, '_');
+            const safeBase = base || `lagu_${Date.now()}`;
+            return `${safeBase}.${ext || 'mp3'}`;
         }
 
         class CalculatorSynthEngine {
             constructor() {
                 this.ctx = null;
                 this.masterGain = null;
+                this.analyser = null;
+                this.freqData = null;
+                this.mediaSourceConnected = false;
+                this.corsAnalyserBlocked = false;
+
                 this.audioEl = new Audio();
                 this.audioEl.crossOrigin = 'anonymous';
                 this.audioEl.preload = 'metadata';
@@ -551,6 +803,8 @@
                 this.spectrumLevels = [2, 4, 6, 3, 7, 5, 4, 2];
                 this.onTick = null;
                 this.onSongFinish = null;
+                this.onTimeSave = null;
+                this._pendingSeekTarget = null;
 
                 this.bindAudioElementEvents();
             }
@@ -559,6 +813,10 @@
                 this.audioEl.addEventListener('loadedmetadata', () => {
                     if (this.currentSong && Number.isFinite(this.audioEl.duration) && this.audioEl.duration > 0) {
                         this.currentSong.duration = Math.round(this.audioEl.duration);
+                        if (this._pendingSeekTarget !== null && this._pendingSeekTarget > 0 && this._pendingSeekTarget < this.audioEl.duration) {
+                            try { this.audioEl.currentTime = this._pendingSeekTarget; } catch (e) {}
+                        }
+                        this._pendingSeekTarget = null;
                         if (this.onTick) this.onTick();
                     }
                 });
@@ -566,7 +824,7 @@
                 this.audioEl.addEventListener('timeupdate', () => {
                     if (this.isPlaying && this.currentSong) {
                         this.elapsed = this.audioEl.currentTime || 0;
-                        this.updateSpectrumFromWave();
+                        this.updateSpectrum();
                     }
                 });
 
@@ -597,8 +855,25 @@
                 }
             }
 
+            setupAnalyser() {
+                if (this.mediaSourceConnected || this.corsAnalyserBlocked) return;
+                try {
+                    this.ensureContext();
+                    const src = this.ctx.createMediaElementSource(this.audioEl);
+                    this.analyser = this.ctx.createAnalyser();
+                    this.analyser.fftSize = 64;
+                    this.analyser.smoothingTimeConstant = 0.72;
+                    this.freqData = new Uint8Array(this.analyser.frequencyBinCount);
+                    src.connect(this.analyser);
+                    this.analyser.connect(this.ctx.destination);
+                    this.mediaSourceConnected = true;
+                } catch (err) {
+                    this.corsAnalyserBlocked = true;
+                }
+            }
+
             setVolume(val) {
-                this.volume = Math.max(0, Math.min(1, val));
+                this.volume = Math.max(0, Math.min(1, Number(val.toFixed(2))));
                 if (this.audioEl) {
                     this.audioEl.volume = this.volume;
                 }
@@ -607,13 +882,65 @@
                 }
             }
 
-            playClick(pitch = 1.0) {
+            playClick(pitch = 1.0, type = 'wheel') {
                 if (!this.clickEnabled) return;
                 try {
                     this.ensureContext();
                     const now = this.ctx.currentTime;
                     const osc = this.ctx.createOscillator();
                     const gain = this.ctx.createGain();
+
+                    if (type === 'enter') {
+                        osc.type = 'triangle';
+                        osc.frequency.setValueAtTime(980, now);
+                        osc.frequency.exponentialRampToValueAtTime(1420, now + 0.022);
+                        gain.gain.setValueAtTime(0.2, now);
+                        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.024);
+                        osc.connect(gain);
+                        gain.connect(this.ctx.destination);
+                        osc.start(now);
+                        osc.stop(now + 0.025);
+                        return;
+                    }
+
+                    if (type === 'back') {
+                        osc.type = 'triangle';
+                        osc.frequency.setValueAtTime(1120, now);
+                        osc.frequency.exponentialRampToValueAtTime(520, now + 0.022);
+                        gain.gain.setValueAtTime(0.19, now);
+                        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.024);
+                        osc.connect(gain);
+                        gain.connect(this.ctx.destination);
+                        osc.start(now);
+                        osc.stop(now + 0.025);
+                        return;
+                    }
+
+                    if (type === 'wake') {
+                        osc.type = 'sine';
+                        osc.frequency.setValueAtTime(660, now);
+                        osc.frequency.exponentialRampToValueAtTime(1320, now + 0.03);
+                        gain.gain.setValueAtTime(0.1, now);
+                        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.032);
+                        osc.connect(gain);
+                        gain.connect(this.ctx.destination);
+                        osc.start(now);
+                        osc.stop(now + 0.035);
+                        return;
+                    }
+
+                    if (type === 'sleep') {
+                        osc.type = 'sine';
+                        osc.frequency.setValueAtTime(880, now);
+                        osc.frequency.exponentialRampToValueAtTime(340, now + 0.035);
+                        gain.gain.setValueAtTime(0.08, now);
+                        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.038);
+                        osc.connect(gain);
+                        gain.connect(this.ctx.destination);
+                        osc.start(now);
+                        osc.stop(now + 0.04);
+                        return;
+                    }
 
                     osc.type = 'triangle';
                     osc.frequency.setValueAtTime(1250 * pitch, now);
@@ -630,8 +957,23 @@
                 } catch (e) {}
             }
 
-            updateSpectrumFromWave() {
+            updateSpectrum() {
                 this.stepIndex++;
+                if (this.analyser && this.freqData && !this.corsAnalyserBlocked) {
+                    this.analyser.getByteFrequencyData(this.freqData);
+                    let sum = 0;
+                    for (let i = 0; i < 16; i++) sum += this.freqData[i];
+                    if (sum > 0) {
+                        const bins = [1, 2, 4, 6, 8, 11, 14, 18];
+                        this.spectrumLevels = bins.map(b => {
+                            const val = this.freqData[b] || 0;
+                            return Math.max(1, Math.min(8, Math.round((val / 255) * 8)));
+                        });
+                        if (this.onTick) this.onTick();
+                        return;
+                    }
+                }
+
                 this.spectrumLevels = this.spectrumLevels.map((_, i) => {
                     const wave = Math.abs(Math.sin((this.stepIndex + i * 1.35) * 0.8));
                     return Math.max(1, Math.min(8, Math.round(wave * 8)));
@@ -648,12 +990,18 @@
 
             startProgressTimer() {
                 this.stopProgressTimer();
+                let saveCounter = 0;
                 this.progressTimer = setInterval(() => {
                     if (!this.isPlaying || !this.currentSong) return;
                     if (Number.isFinite(this.audioEl.currentTime) && this.audioEl.currentTime > 0) {
                         this.elapsed = this.audioEl.currentTime;
                     } else {
                         this.elapsed += 0.25;
+                    }
+                    saveCounter++;
+                    if (saveCounter >= 8 && this.onTimeSave) {
+                        saveCounter = 0;
+                        this.onTimeSave();
                     }
                     if (this.currentSong.duration > 0 && this.elapsed >= this.currentSong.duration) {
                         this.elapsed = 0;
@@ -664,11 +1012,46 @@
                 }, 250);
             }
 
-            playSong(song) {
+            seekBy(deltaSec) {
+                if (!this.currentSong) return;
+                const dur = Number.isFinite(this.audioEl.duration) && this.audioEl.duration > 0
+                    ? this.audioEl.duration
+                    : (this.currentSong.duration || 0);
+                const maxTime = dur > 0 ? dur : Math.max(0, this.elapsed + deltaSec);
+                const target = Math.max(0, Math.min(maxTime, this.elapsed + deltaSec));
+                this.elapsed = target;
+                try {
+                    if (Number.isFinite(target)) {
+                        this.audioEl.currentTime = target;
+                    }
+                } catch (e) {}
+                if (this.onTimeSave) this.onTimeSave();
+                if (this.onTick) this.onTick();
+            }
+
+            loadSongWithoutPlay(song, startPos = 0) {
                 this.stopProgressTimer();
                 this.audioEl.pause();
                 this.currentSong = song || null;
-                this.elapsed = 0;
+                this.elapsed = Math.max(0, startPos || 0);
+                this._pendingSeekTarget = this.elapsed > 0 ? this.elapsed : null;
+                this.stepIndex = 0;
+                this.isPlaying = false;
+                this.audioEl.volume = this.volume;
+
+                if (song && song.audioUrl) {
+                    this.audioEl.src = song.audioUrl;
+                } else {
+                    this.audioEl.removeAttribute('src');
+                }
+            }
+
+            playSong(song, startPos = 0) {
+                this.stopProgressTimer();
+                this.audioEl.pause();
+                this.currentSong = song || null;
+                this.elapsed = Math.max(0, startPos || 0);
+                this._pendingSeekTarget = this.elapsed > 0 ? this.elapsed : null;
                 this.stepIndex = 0;
                 this.audioEl.volume = this.volume;
 
@@ -678,8 +1061,10 @@
                     return;
                 }
 
+                this.setupAnalyser();
                 this.isPlaying = true;
                 this.audioEl.src = song.audioUrl;
+
                 const playPromise = this.audioEl.play();
                 if (playPromise && typeof playPromise.catch === 'function') {
                     playPromise.catch(() => {
@@ -701,6 +1086,7 @@
                     this.stopProgressTimer();
                     this.audioEl.pause();
                 } else {
+                    this.setupAnalyser();
                     this.isPlaying = true;
                     this.audioEl.play().catch(() => {
                         this.isPlaying = false;
@@ -715,84 +1101,6 @@
 
         const synth = new CalculatorSynthEngine();
 
-        function getAllTracks() {
-            return supabaseStore.cloudTracks;
-        }
-
-        async function syncSupabaseData() {
-            if (!supabaseClient) {
-                supabaseStore.connected = false;
-                supabaseStore.statusLabel = 'LOKAL';
-                supabaseStore.cloudTracks = [];
-                state.currentQueue = [];
-                state.currentTrackIndex = 0;
-                renderLCDScreen();
-                return;
-            }
-
-            try {
-                const [storageRes, notesRes, remRes] = await Promise.allSettled([
-                    supabaseClient.storage
-                        .from(SUPABASE_CONFIG.bucket)
-                        .list(SUPABASE_CONFIG.folder, {
-                            limit: 100,
-                            offset: 0,
-                            sortBy: { column: 'name', order: 'asc' }
-                        }),
-                    supabaseClient.from('catatan').select('*').order('is_pinned', { ascending: false }).order('id', { ascending: false }).limit(50),
-                    supabaseClient.from('pengingat').select('*').limit(50)
-                ]);
-
-                if (storageRes.status === 'fulfilled' && !storageRes.value.error && Array.isArray(storageRes.value.data)) {
-                    const audioFiles = storageRes.value.data.filter(
-                        file => file && file.name && /\.(mp3|wav|m4a|ogg)$/i.test(file.name)
-                    );
-                    supabaseStore.cloudTracks = audioFiles.map((file, idx) => {
-                        const urlData = supabaseClient.storage
-                            .from(SUPABASE_CONFIG.bucket)
-                            .getPublicUrl(`${SUPABASE_CONFIG.folder}/${file.name}`);
-                        return {
-                            id: `SB-${idx + 1}`,
-                            title: cleanUploadName(file.name),
-                            artist: 'SUPABASE STORAGE',
-                            duration: 0,
-                            audioUrl: urlData?.data?.publicUrl || ''
-                        };
-                    });
-                } else {
-                    supabaseStore.cloudTracks = [];
-                }
-
-                if (notesRes.status === 'fulfilled' && !notesRes.value.error && Array.isArray(notesRes.value.data)) {
-                    supabaseStore.notes = notesRes.value.data;
-                }
-
-                if (remRes.status === 'fulfilled' && !remRes.value.error && Array.isArray(remRes.value.data)) {
-                    supabaseStore.reminders = remRes.value.data;
-                }
-
-                const anySuccess =
-                    (storageRes.status === 'fulfilled' && !storageRes.value.error) ||
-                    (notesRes.status === 'fulfilled' && !notesRes.value.error) ||
-                    (remRes.status === 'fulfilled' && !remRes.value.error);
-
-                supabaseStore.connected = anySuccess;
-                supabaseStore.statusLabel = anySuccess ? 'TERHUBUNG' : 'OFFLINE';
-            } catch (err) {
-                supabaseStore.connected = false;
-                supabaseStore.statusLabel = 'OFFLINE';
-                supabaseStore.cloudTracks = [];
-            }
-
-            state.currentQueue = getAllTracks();
-            if (state.currentQueue.length === 0) {
-                state.currentTrackIndex = 0;
-            } else if (state.currentTrackIndex >= state.currentQueue.length) {
-                state.currentTrackIndex = 0;
-            }
-            renderLCDScreen();
-        }
-
         const LCD_THEMES = ['olive', 'amber', 'blue', 'silver'];
         const THEME_NAMES = {
             olive: 'HIJAU-LCD',
@@ -801,11 +1109,22 @@
             silver: 'PERAK-MONO'
         };
 
+        const REPEAT_MODES = ['off', 'all', 'one'];
+        const REPEAT_NAMES = {
+            off: 'MATI',
+            all: 'SEMUA',
+            one: 'SATU'
+        };
+
         const state = {
             isLocked: false,
             shuffle: false,
+            repeatMode: 'all',
             nightMode: false,
             themeIndex: 0,
+            wheelMode: 'volume',
+            savedTrackId: null,
+            savedElapsed: 0,
             currentQueue: [],
             currentTrackIndex: 0,
             navStack: [
@@ -825,8 +1144,293 @@
             ]
         };
 
+        function savePersistentState() {
+            try {
+                const payload = {
+                    themeIndex: state.themeIndex,
+                    nightMode: state.nightMode,
+                    shuffle: state.shuffle,
+                    repeatMode: state.repeatMode,
+                    clickEnabled: synth.clickEnabled,
+                    volume: synth.volume,
+                    savedTrackId: synth.currentSong ? synth.currentSong.id : state.savedTrackId,
+                    savedElapsed: Math.floor(synth.elapsed || 0)
+                };
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+            } catch (e) {}
+        }
+
+        function loadPersistentState() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                if (!raw) return;
+                const data = JSON.parse(raw);
+                if (typeof data.themeIndex === 'number' && LCD_THEMES[data.themeIndex]) {
+                    state.themeIndex = data.themeIndex;
+                    document.body.setAttribute('data-lcd-theme', LCD_THEMES[state.themeIndex]);
+                }
+                if (typeof data.nightMode === 'boolean') {
+                    state.nightMode = data.nightMode;
+                    document.body.setAttribute('data-night-mode', state.nightMode ? 'true' : 'false');
+                }
+                if (typeof data.shuffle === 'boolean') state.shuffle = data.shuffle;
+                if (REPEAT_MODES.includes(data.repeatMode)) state.repeatMode = data.repeatMode;
+                if (typeof data.clickEnabled === 'boolean') synth.clickEnabled = data.clickEnabled;
+                if (typeof data.volume === 'number') synth.setVolume(data.volume);
+                if (typeof data.savedTrackId === 'string') state.savedTrackId = data.savedTrackId;
+                if (typeof data.savedElapsed === 'number') state.savedElapsed = data.savedElapsed;
+            } catch (e) {}
+        }
+
+        synth.onTimeSave = savePersistentState;
+
+        function getAllTracks() {
+            return [...supabaseStore.cloudTracks, ...supabaseStore.localTracks];
+        }
+
+        const audioUploadInputEl = document.getElementById('audioUploadInput');
+
+        function triggerPhoneAudioPicker() {
+            if (supabaseStore.isUploading) {
+                showLCDToast('SEDANG MENGUNGGAH...', 1200);
+                return;
+            }
+            if (!audioUploadInputEl) return;
+            audioUploadInputEl.value = '';
+            audioUploadInputEl.click();
+        }
+
+        async function handlePhoneFilesSelected(fileList) {
+            const files = Array.from(fileList || []).filter(f =>
+                (f.type && f.type.startsWith('audio/')) || /\.(mp3|wav|m4a|ogg|aac|flac)$/i.test(f.name)
+            );
+
+            if (files.length === 0) {
+                showLCDToast('FILE BUKAN AUDIO');
+                triggerHaptic([30, 40, 30]);
+                return;
+            }
+
+            supabaseStore.isUploading = true;
+            let cloudSuccessCount = 0;
+            let localFallbackCount = 0;
+
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                supabaseStore.uploadStatus = `${i + 1}/${files.length}`;
+                showLCDToast(`UPLOAD ${i + 1}/${files.length}...`, 4000);
+                renderLCDScreen();
+
+                const safeFileName = sanitizeUploadFilename(file.name);
+                const storagePath = `${SUPABASE_CONFIG.folder}/${safeFileName}`;
+                let uploadedToCloud = false;
+
+                if (supabaseClient) {
+                    try {
+                        const { error } = await supabaseClient.storage
+                            .from(SUPABASE_CONFIG.bucket)
+                            .upload(storagePath, file, {
+                                cacheControl: '3600',
+                                upsert: true,
+                                contentType: file.type || 'audio/mpeg'
+                            });
+
+                        if (!error) {
+                            uploadedToCloud = true;
+                            cloudSuccessCount++;
+                        }
+                    } catch (err) {
+                        console.warn('Upload cloud gagal, fallback ke memori perangkat:', err);
+                    }
+                }
+
+                if (!uploadedToCloud) {
+                    const blobUrl = URL.createObjectURL(file);
+                    const meta = parseTrackMetadata(file.name, 'LOKAL HP');
+                    supabaseStore.localTracks.push({
+                        id: `HP-${Date.now()}-${i}`,
+                        fileName: file.name,
+                        title: meta.title,
+                        artist: 'MEMORI PONSEL',
+                        folder: 'LOKAL HP',
+                        duration: 0,
+                        audioUrl: blobUrl
+                    });
+                    if (!supabaseStore.folders.includes('LOKAL HP')) {
+                        supabaseStore.folders.push('LOKAL HP');
+                    }
+                    localFallbackCount++;
+                }
+            }
+
+            supabaseStore.isUploading = false;
+            supabaseStore.uploadStatus = 'PILIH';
+
+            if (cloudSuccessCount > 0) {
+                await syncSupabaseData();
+            } else {
+                state.currentQueue = getAllTracks();
+                renderLCDScreen();
+            }
+
+            triggerHaptic([20, 40, 20]);
+            if (cloudSuccessCount > 0 && localFallbackCount === 0) {
+                showLCDToast(`${cloudSuccessCount} LAGU TERUNGGAH!`, 2000);
+            } else if (cloudSuccessCount > 0 && localFallbackCount > 0) {
+                showLCDToast(`${cloudSuccessCount} CLOUD, ${localFallbackCount} HP`, 2200);
+            } else {
+                showLCDToast(`${localFallbackCount} LAGU HP DITAMBAH`, 2200);
+            }
+        }
+
+        if (audioUploadInputEl) {
+            audioUploadInputEl.addEventListener('change', (e) => {
+                if (e.target.files && e.target.files.length > 0) {
+                    handlePhoneFilesSelected(e.target.files);
+                }
+            });
+        }
+
+        async function syncSupabaseData() {
+            if (!supabaseClient) {
+                supabaseStore.connected = false;
+                supabaseStore.statusLabel = 'LOKAL';
+                supabaseStore.cloudTracks = [];
+                supabaseStore.folders = supabaseStore.localTracks.length > 0 ? ['LOKAL HP'] : [];
+                state.currentQueue = getAllTracks();
+                if (state.currentQueue.length === 0) state.currentTrackIndex = 0;
+                renderLCDScreen();
+                return;
+            }
+
+            try {
+                const [storageRes, notesRes, remRes] = await Promise.allSettled([
+                    supabaseClient.storage
+                        .from(SUPABASE_CONFIG.bucket)
+                        .list(SUPABASE_CONFIG.folder, {
+                            limit: 100,
+                            offset: 0,
+                            sortBy: { column: 'name', order: 'asc' }
+                        }),
+                    supabaseClient.from('catatan').select('*').order('id', { ascending: false }).limit(50),
+                    supabaseClient.from('pengingat').select('*').order('id', { ascending: false }).limit(50)
+                ]);
+
+                const collectedTracks = [];
+                const detectedFolders = new Set();
+
+                if (storageRes.status === 'fulfilled' && !storageRes.value.error && Array.isArray(storageRes.value.data)) {
+                    const entries = storageRes.value.data;
+
+                    entries
+                        .filter(item => item && item.name && /\.(mp3|wav|m4a|ogg|aac|flac)$/i.test(item.name))
+                        .forEach(file => {
+                            const urlData = supabaseClient.storage
+                                .from(SUPABASE_CONFIG.bucket)
+                                .getPublicUrl(`${SUPABASE_CONFIG.folder}/${file.name}`);
+                            const meta = parseTrackMetadata(file.name, 'UTAMA');
+                            collectedTracks.push({
+                                id: `SB-${collectedTracks.length + 1}`,
+                                fileName: file.name,
+                                title: meta.title,
+                                artist: meta.artist,
+                                folder: 'UTAMA',
+                                duration: 0,
+                                audioUrl: urlData?.data?.publicUrl || ''
+                            });
+                        });
+
+                    const subfolders = entries.filter(item => item && item.name && !item.id && !/\./.test(item.name));
+                    if (subfolders.length > 0) {
+                        const subResults = await Promise.allSettled(
+                            subfolders.map(sf =>
+                                supabaseClient.storage
+                                    .from(SUPABASE_CONFIG.bucket)
+                                    .list(`${SUPABASE_CONFIG.folder}/${sf.name}`, {
+                                        limit: 100,
+                                        sortBy: { column: 'name', order: 'asc' }
+                                    })
+                                    .then(res => ({ folderName: sf.name, res }))
+                            )
+                        );
+
+                        subResults.forEach(sr => {
+                            if (sr.status === 'fulfilled' && !sr.value.res.error && Array.isArray(sr.value.res.data)) {
+                                const fName = sr.value.folderName.toUpperCase();
+                                const subFiles = sr.value.res.data.filter(f => f && f.name && /\.(mp3|wav|m4a|ogg|aac|flac)$/i.test(f.name));
+                                if (subFiles.length > 0) detectedFolders.add(fName);
+                                subFiles.forEach(file => {
+                                    const urlData = supabaseClient.storage
+                                        .from(SUPABASE_CONFIG.bucket)
+                                        .getPublicUrl(`${SUPABASE_CONFIG.folder}/${sr.value.folderName}/${file.name}`);
+                                    const meta = parseTrackMetadata(file.name, fName);
+                                    collectedTracks.push({
+                                        id: `SB-${collectedTracks.length + 1}`,
+                                        fileName: file.name,
+                                        title: meta.title,
+                                        artist: meta.artist,
+                                        folder: fName,
+                                        duration: 0,
+                                        audioUrl: urlData?.data?.publicUrl || ''
+                                    });
+                                });
+                            }
+                        });
+                    }
+                }
+
+                if (supabaseStore.localTracks.length > 0) {
+                    detectedFolders.add('LOKAL HP');
+                }
+
+                supabaseStore.cloudTracks = collectedTracks;
+                supabaseStore.folders = Array.from(detectedFolders);
+
+                if (notesRes.status === 'fulfilled' && !notesRes.value.error && Array.isArray(notesRes.value.data)) {
+                    supabaseStore.notes = sortNewestFirst(notesRes.value.data);
+                }
+
+                if (remRes.status === 'fulfilled' && !remRes.value.error && Array.isArray(remRes.value.data)) {
+                    supabaseStore.reminders = sortNewestFirst(remRes.value.data);
+                }
+
+                const anySuccess =
+                    (storageRes.status === 'fulfilled' && !storageRes.value.error) ||
+                    (notesRes.status === 'fulfilled' && !notesRes.value.error) ||
+                    (remRes.status === 'fulfilled' && !remRes.value.error);
+
+                supabaseStore.connected = anySuccess;
+                supabaseStore.statusLabel = anySuccess ? 'TERHUBUNG' : 'OFFLINE';
+            } catch (err) {
+                supabaseStore.connected = false;
+                supabaseStore.statusLabel = 'OFFLINE';
+                supabaseStore.cloudTracks = [];
+                supabaseStore.folders = supabaseStore.localTracks.length > 0 ? ['LOKAL HP'] : [];
+            }
+
+            state.currentQueue = getAllTracks();
+            if (state.currentQueue.length === 0) {
+                state.currentTrackIndex = 0;
+            } else {
+                if (!synth.currentSong && state.savedTrackId) {
+                    const foundIdx = state.currentQueue.findIndex(t => t.id === state.savedTrackId);
+                    if (foundIdx !== -1) {
+                        state.currentTrackIndex = foundIdx;
+                        synth.loadSongWithoutPlay(state.currentQueue[foundIdx], state.savedElapsed);
+                    }
+                } else if (state.currentTrackIndex >= state.currentQueue.length) {
+                    state.currentTrackIndex = 0;
+                }
+            }
+            renderLCDScreen();
+        }
+
         function currentView() {
             return state.navStack[state.navStack.length - 1];
+        }
+
+        function isNowPlayingActive() {
+            return currentView().type === 'now-playing';
         }
 
         function formatCalcTime(sec) {
@@ -840,75 +1444,137 @@
             return num < 10 ? `0${num}` : `${num}`;
         }
 
+        function paginateNokiaText(text, charsPerPage = 240) {
+            const clean = (text || '(Kosong)').trim();
+            if (!clean) return ['(Kosong)'];
+
+            const lines = clean.split('\n');
+            const pages = [];
+            let current = '';
+
+            for (const line of lines) {
+                const words = line.split(' ');
+                for (let w = 0; w < words.length; w++) {
+                    const word = words[w];
+                    const sep = current.length === 0 || current.endsWith('\n') ? '' : ' ';
+                    if ((current + sep + word).length > charsPerPage && current.length > 0) {
+                        pages.push(current.trimEnd());
+                        current = word;
+                    } else {
+                        current += sep + word;
+                    }
+                }
+                if (current.length + 1 <= charsPerPage) {
+                    current += '\n';
+                } else {
+                    pages.push(current.trimEnd());
+                    current = '';
+                }
+            }
+
+            if (current.trim().length > 0) {
+                pages.push(current.trimEnd());
+            }
+            return pages.length > 0 ? pages : ['(Kosong)'];
+        }
+
+        function buildTrackListMenu(title, tracks) {
+            const trackItems = tracks.length > 0
+                ? tracks.map((trk, idx) => ({
+                    label: `${padTwo(idx + 1)}. ${trk.title}`,
+                    rightText: trk.duration > 0 ? formatCalcTime(trk.duration) : 'AUDIO',
+                    action: 'play-track',
+                    queue: tracks,
+                    trackIndex: idx
+                }))
+                : [{
+                    label: 'BELUM ADA AUDIO DI FOLDER INI',
+                    rightText: 'KOSONG',
+                    action: 'detail-page',
+                    detailTitle: title,
+                    pages: [`Status: ${supabaseStore.statusLabel}\nUnggah lagu lewat menu PENGATURAN -> 08. UPLOAD LAGU.`]
+                }];
+
+            return {
+                id: `tracks-${title}`,
+                title,
+                type: 'menu',
+                selectedIndex: 0,
+                items: [
+                    ...(tracks.length > 0 ? [{ label: 'PUTAR ACAK DAFTAR INI', action: 'shuffle-play', queue: tracks }] : []),
+                    ...trackItems
+                ]
+            };
+        }
+
         function buildSubmenu(target) {
             const allTracks = getAllTracks();
 
             if (target === 'music') {
-                const trackItems = allTracks.length > 0
-                    ? allTracks.map((trk, idx) => ({
-                        label: `${padTwo(idx + 1)}. ${trk.title}`,
-                        rightText: trk.duration > 0 ? formatCalcTime(trk.duration) : 'MP3',
-                        action: 'play-track',
-                        queue: allTracks,
-                        trackIndex: idx
-                    }))
-                    : [{
-                        label: 'BELUM ADA AUDIO DI SUPABASE',
-                        rightText: 'KOSONG',
-                        action: 'detail',
-                        detailTitle: 'MUSIK SUPABASE',
-                        detailBody: `Status: ${supabaseStore.statusLabel}\nTidak ada file audio di bucket "${SUPABASE_CONFIG.bucket}/${SUPABASE_CONFIG.folder}".`
-                    }];
+                if (supabaseStore.folders.length === 0) {
+                    return buildTrackListMenu('MUSIK SUPABASE', allTracks);
+                }
+
+                const folderItems = supabaseStore.folders.map(fName => {
+                    const count = allTracks.filter(t => t.folder === fName).length;
+                    return {
+                        label: `FOLDER: ${fName}`,
+                        rightText: `${count} TRK`,
+                        action: 'folder-tracks',
+                        folderName: fName
+                    };
+                });
 
                 return {
-                    id: 'music',
+                    id: 'music-folders',
                     title: 'MUSIK SUPABASE',
                     type: 'menu',
                     selectedIndex: 0,
                     items: [
-                        ...(allTracks.length > 0 ? [{ label: 'PUTAR ACAK SUPABASE', action: 'shuffle-play' }] : []),
-                        ...trackItems
+                        { label: '01. SEMUA LAGU', rightText: `${allTracks.length} TRK`, action: 'all-tracks' },
+                        ...folderItems
                     ]
                 };
             }
 
             if (target === 'notes') {
-                const items = supabaseStore.notes.length > 0
-                    ? supabaseStore.notes.map((n, i) => {
-                        const noteTitle = (n.title || n.tittle || 'TANPA JUDUL').toUpperCase();
+                const orderedNotes = sortNewestFirst(supabaseStore.notes);
+                const items = orderedNotes.length > 0
+                    ? orderedNotes.map((n, i) => {
+                        const noteTitle = (n.title || n.tittle || 'CATATAN').toUpperCase();
                         return {
-                            label: `${padTwo(i + 1)}. ${n.is_pinned ? '[PIN] ' : ''}${noteTitle}`,
+                            label: `${padTwo(i + 1)}. ${noteTitle}`,
                             rightText: 'BACA',
-                            action: 'detail',
+                            action: 'detail-page',
                             detailTitle: noteTitle,
-                            detailBody: n.description || '(Kosong)'
+                            pages: paginateNokiaText(n.description || '(Kosong)')
                         };
                     })
                     : [{
                         label: 'TIDAK ADA CATATAN / OFFLINE',
                         rightText: 'INFO',
-                        action: 'detail',
+                        action: 'detail-page',
                         detailTitle: 'INFO CATATAN',
-                        detailBody: `Status: ${supabaseStore.statusLabel}\nBelum ada data catatan yang dimuat.`
+                        pages: [`Status: ${supabaseStore.statusLabel}\nBelum ada data catatan yang dimuat.`]
                     }];
                 return { id: 'notes', title: 'CATATAN', type: 'menu', selectedIndex: 0, items };
             }
 
             if (target === 'reminders') {
-                const items = supabaseStore.reminders.length > 0
-                    ? supabaseStore.reminders.map((r, i) => ({
-                        label: `${padTwo(i + 1)}. ${r.is_completed ? '[SELESAI] ' : ''}${(r.content || 'PENGINGAT').toUpperCase()}`,
+                const orderedReminders = sortNewestFirst(supabaseStore.reminders);
+                const items = orderedReminders.length > 0
+                    ? orderedReminders.map((r, i) => ({
+                        label: `${padTwo(i + 1)}. ${r.is_completed ? '[V] ' : '[ ] '}${(r.content || 'PENGINGAT').toUpperCase()}`,
                         rightText: r.reminder_time ? r.reminder_time.substring(0, 5) : '--:--',
-                        action: 'detail',
-                        detailTitle: 'DETAIL PENGINGAT',
-                        detailBody: `Keterangan: ${r.content || '-'}\nTanggal: ${r.reminder_date || '-'}\nJam: ${r.reminder_time || '-'}\nStatus: ${r.is_completed ? 'Selesai' : 'Aktif'}`
+                        action: 'reminder-detail',
+                        reminderIndex: i
                     }))
                     : [{
                         label: 'TIDAK ADA PENGINGAT / OFFLINE',
                         rightText: 'INFO',
-                        action: 'detail',
+                        action: 'detail-page',
                         detailTitle: 'INFO PENGINGAT',
-                        detailBody: `Status: ${supabaseStore.statusLabel}\nBelum ada jadwal pengingat.`
+                        pages: [`Status: ${supabaseStore.statusLabel}\nBelum ada jadwal pengingat.`]
                     }];
                 return { id: 'reminders', title: 'PENGINGAT', type: 'menu', selectedIndex: 0, items };
             }
@@ -923,9 +1589,11 @@
                         { label: '01. CAHAYA LCD', action: 'cycle-theme', getVal: () => THEME_NAMES[LCD_THEMES[state.themeIndex]] },
                         { label: '02. MODE MALAM', action: 'toggle-night', getVal: () => state.nightMode ? 'AKTIF' : 'MATI' },
                         { label: '03. KUNCI HOLD', action: 'toggle-hold', allowWhenLocked: true, getVal: () => state.isLocked ? 'AKTIF' : 'MATI' },
-                        { label: '04. ACAK LAGU', action: 'toggle-shuffle', getVal: () => state.shuffle ? 'AKTIF' : 'MATI' },
-                        { label: '05. SUARA KLIK', action: 'toggle-click', getVal: () => synth.clickEnabled ? 'AKTIF' : 'MATI' },
-                        { label: '06. SINKRON SUPABASE', action: 'sync-supabase', getVal: () => supabaseStore.statusLabel }
+                        { label: '04. MODE ULANGI', action: 'cycle-repeat', getVal: () => REPEAT_NAMES[state.repeatMode] },
+                        { label: '05. ACAK LAGU', action: 'toggle-shuffle', getVal: () => state.shuffle ? 'AKTIF' : 'MATI' },
+                        { label: '06. SUARA KLIK', action: 'toggle-click', getVal: () => synth.clickEnabled ? 'AKTIF' : 'MATI' },
+                        { label: '07. SINKRON SUPABASE', action: 'sync-supabase', getVal: () => supabaseStore.statusLabel },
+                        { label: '08. UPLOAD LAGU (HP)', action: 'upload-audio', getVal: () => supabaseStore.uploadStatus }
                     ]
                 };
             }
@@ -937,9 +1605,23 @@
         const lcdScreenBodyEl = document.getElementById('lcdScreenBody');
         const lcdVolIndicatorEl = document.getElementById('lcdVolIndicator');
         const lcdTrackCounterEl = document.getElementById('lcdTrackCounter');
+        const lcdFooterLeftEl = document.getElementById('lcdFooterLeft');
+        const lcdFooterRightEl = document.getElementById('lcdFooterRight');
+        const lcdToastEl = document.getElementById('lcdToast');
         const badgePlayEl = document.getElementById('badgePlay');
         const badgeHoldEl = document.getElementById('badgeHold');
         const badgeShuffleEl = document.getElementById('badgeShuffle');
+        const badgeRepeatEl = document.getElementById('badgeRepeat');
+
+        let toastTimeout = null;
+        function showLCDToast(msg, duration = 1600) {
+            lcdToastEl.textContent = msg;
+            lcdToastEl.classList.remove('hidden');
+            if (toastTimeout) clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
+                lcdToastEl.classList.add('hidden');
+            }, duration);
+        }
 
         function updateStatusAnnunciators() {
             const view = currentView();
@@ -959,11 +1641,74 @@
             badgeHoldEl.className = state.isLocked ? 'lcd-badge' : 'lcd-badge ghost';
             badgeShuffleEl.className = state.shuffle ? 'lcd-badge' : 'lcd-badge ghost';
 
+            if (state.repeatMode === 'one') {
+                badgeRepeatEl.textContent = 'RPT-1';
+                badgeRepeatEl.className = 'lcd-badge';
+            } else if (state.repeatMode === 'all') {
+                badgeRepeatEl.textContent = 'RPT-A';
+                badgeRepeatEl.className = 'lcd-badge';
+            } else {
+                badgeRepeatEl.textContent = 'RPT';
+                badgeRepeatEl.className = 'lcd-badge ghost';
+            }
+
             const volPct = Math.round(synth.volume * 100);
             lcdVolIndicatorEl.textContent = `VOL:${padTwo(volPct)}`;
             const qLen = Math.max(1, state.currentQueue.length);
             const curNum = state.currentQueue.length > 0 ? state.currentTrackIndex + 1 : 0;
             lcdTrackCounterEl.textContent = `TRK ${padTwo(curNum)}/${padTwo(qLen)}`;
+
+            if (view.type === 'detail-page') {
+                lcdFooterLeftEl.textContent = '[WHEEL] HALAMAN';
+                lcdFooterRightEl.textContent = '[MENU] KEMBALI';
+            } else if (view.type === 'reminder-detail') {
+                lcdFooterLeftEl.textContent = '[MENU] KEMBALI';
+                lcdFooterRightEl.textContent = '[TENGAH] UBAH STATUS';
+            } else if (view.type === 'now-playing') {
+                lcdFooterLeftEl.textContent = state.wheelMode === 'seek' ? '[WHEEL] GESER ±5S' : '[WHEEL] VOLUME';
+                lcdFooterRightEl.textContent = '[TENGAH] MODE RODA';
+            } else {
+                lcdFooterLeftEl.textContent = '[WHEEL] GULIR';
+                lcdFooterRightEl.textContent = '[TENGAH] PILIH';
+            }
+        }
+
+        function syncMenuSelectionDOM(view) {
+            const scrollContainer = document.getElementById('calcListScroll');
+            if (!scrollContainer) {
+                renderLCDScreen();
+                return;
+            }
+            const rows = scrollContainer.querySelectorAll('.calc-menu-row');
+            if (rows.length !== view.items.length) {
+                renderLCDScreen();
+                return;
+            }
+            rows.forEach((row, idx) => {
+                const isActive = idx === view.selectedIndex;
+                row.classList.toggle('active', isActive);
+                const iconSpan = row.querySelector('.calc-row-icon');
+                if (iconSpan) {
+                    const item = view.items[idx];
+                    const isCurrentlyPlaying = item && item.action === 'play-track' &&
+                        synth.currentSong &&
+                        item.queue[item.trackIndex] &&
+                        item.queue[item.trackIndex].id === synth.currentSong.id;
+                    iconSpan.textContent = isActive ? '▶' : (isCurrentlyPlaying ? '♪' : ' ');
+                }
+            });
+            const activeRow = rows[view.selectedIndex];
+            if (activeRow) {
+                const rowTop = activeRow.offsetTop;
+                const rowBottom = rowTop + activeRow.offsetHeight;
+                const viewTop = scrollContainer.scrollTop;
+                const viewBottom = viewTop + scrollContainer.clientHeight;
+                if (rowTop < viewTop) {
+                    scrollContainer.scrollTop = rowTop;
+                } else if (rowBottom > viewBottom) {
+                    scrollContainer.scrollTop = rowBottom - scrollContainer.clientHeight;
+                }
+            }
         }
 
         function renderLCDScreen() {
@@ -981,9 +1726,9 @@
 
                     return `
                         <div class="calc-menu-row ${isActive ? 'active' : ''}" data-idx="${idx}">
-                            <div class="flex items-center gap-1.5 truncate pr-2">
-                                <span>${isActive ? '▶' : (isCurrentlyPlaying ? '♪' : ' ')}</span>
-                                <span class="truncate">${item.label}</span>
+                            <div class="calc-menu-label-wrap">
+                                <span class="calc-row-icon shrink-0">${isActive ? '▶' : (isCurrentlyPlaying ? '♪' : ' ')}</span>
+                                <span class="calc-menu-text">${item.label}</span>
                             </div>
                             <div class="shrink-0 font-calc-digit text-xs sm:text-sm">
                                 ${valueTag ? `[${valueTag}]` : '&gt;'}
@@ -1001,23 +1746,82 @@
                 const scrollContainer = document.getElementById('calcListScroll');
                 const activeRow = scrollContainer?.querySelector('.calc-menu-row.active');
                 if (activeRow) {
-                    activeRow.scrollIntoView({ block: 'nearest' });
+                    scrollContainer.scrollTop = Math.max(0, activeRow.offsetTop - 4);
                 }
                 return;
             }
 
-            if (view.type === 'detail') {
+            if (view.type === 'detail-page') {
+                const totalPages = Math.max(1, view.pages.length);
+                const curPage = Math.max(0, Math.min(totalPages - 1, view.pageIndex || 0));
+                view.pageIndex = curPage;
+                const pageContent = view.pages[curPage] || '(Kosong)';
+
+                let dotsHTML = '';
+                for (let p = 0; p < totalPages; p++) {
+                    dotsHTML += `<span class="inline-block w-2 h-1.5 ${p === curPage ? 'bg-current' : 'bg-current/25'}"></span>`;
+                }
+
                 lcdScreenBodyEl.innerHTML = `
-                    <div class="flex-1 flex flex-col p-2.5 sm:p-3.5 overflow-hidden">
-                        <div class="font-calc-digit text-xs font-bold border-b border-current/40 pb-1 mb-1.5 uppercase shrink-0">
-                            ${view.detailTitle || 'RINCIAN'}
+                    <div class="nokia-reader-shell">
+                        <div class="nokia-reader-header">
+                            <span class="font-calc-digit text-[11px] font-bold uppercase truncate pr-2">
+                                ${view.detailTitle || 'CATATAN'}
+                            </span>
+                            <span class="font-calc-digit text-[10px] font-bold shrink-0 px-1 border border-current">
+                                HAL ${padTwo(curPage + 1)}/${padTwo(totalPages)}
+                            </span>
                         </div>
-                        <div id="calcDetailScroll" class="flex-1 overflow-y-auto no-scrollbar pr-0.5">
-                            <div class="calc-detail-box">${view.detailBody || ''}</div>
+
+                        <div class="nokia-reader-body-slot">
+                            <div class="nokia-page-body">${pageContent}</div>
                         </div>
-                        <div class="text-[10px] font-calc-digit opacity-75 pt-1.5 border-t border-current/25 mt-1.5 shrink-0 flex justify-between">
-                            <span>RODA/GULIR = BACA</span>
-                            <span>[MENU] = KEMBALI</span>
+
+                        <div class="nokia-reader-footer">
+                            <span class="font-calc-digit text-[10px]">
+                                ${curPage > 0 ? '◀ SEBELUMNYA' : 'AWAL HALAMAN'}
+                            </span>
+                            <div class="flex items-center gap-1">${dotsHTML}</div>
+                            <span class="font-calc-digit text-[10px]">
+                                ${curPage < totalPages - 1 ? 'LANJUT ▶' : 'AKHIR HALAMAN'}
+                            </span>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
+            if (view.type === 'reminder-detail') {
+                const orderedReminders = sortNewestFirst(supabaseStore.reminders);
+                const rem = orderedReminders[view.reminderIndex];
+                if (!rem) {
+                    lcdScreenBodyEl.innerHTML = `<div class="p-4 font-calc-matrix text-2xl">DATA TIDAK DITEMUKAN</div>`;
+                    return;
+                }
+                const statusText = rem.is_completed ? '[V] SUDAH SELESAI' : '[ ] BELUM SELESAI';
+                lcdScreenBodyEl.innerHTML = `
+                    <div class="flex-1 flex flex-col justify-between p-2.5 sm:p-3.5 overflow-hidden">
+                        <div class="lcd-divider-b pb-1 mb-1.5 flex items-center justify-between">
+                            <span class="font-calc-digit text-xs font-bold">PENGINGAT #${padTwo(view.reminderIndex + 1)}</span>
+                            <span class="font-calc-digit text-[10px] px-1.5 py-0.5 border border-current font-bold">
+                                ${rem.is_completed ? 'SELESAI' : 'AKTIF'}
+                            </span>
+                        </div>
+
+                        <div class="my-auto space-y-1.5">
+                            <div class="font-calc-matrix text-2xl sm:text-3xl font-bold leading-tight">
+                                ${rem.content || '-'}
+                            </div>
+                            <div class="font-calc-digit text-xs opacity-85">
+                                TANGGAL: ${rem.reminder_date || '-'} | JAM: ${rem.reminder_time ? rem.reminder_time.substring(0, 5) : '--:--'}
+                            </div>
+                        </div>
+
+                        <div class="pt-2 lcd-divider-t flex items-center justify-between">
+                            <span class="font-calc-digit text-xs font-bold">${statusText}</span>
+                            <span class="font-calc-digit text-[10px] px-1.5 py-0.5 bg-current text-[var(--lcd-bg)] font-bold">
+                                KLIK TENGAH = UBAH
+                            </span>
                         </div>
                     </div>
                 `;
@@ -1031,7 +1835,7 @@
                         <div class="flex-1 flex flex-col items-center justify-center p-3 text-center">
                             <div class="font-calc-matrix text-2xl sm:text-3xl font-bold">TIDAK ADA LAGU</div>
                             <div class="font-calc-digit text-xs opacity-80 mt-1">
-                                MUSIK DIAMBIL DARI SUPABASE STORAGE
+                                UNGGAH LAGU DI PENGATURAN
                             </div>
                         </div>
                     `;
@@ -1059,18 +1863,22 @@
                     return `<div class="flex-1 flex flex-col gap-[1.5px]">${blocks}</div>`;
                 }).join('');
 
+                const wheelBadge = state.wheelMode === 'seek'
+                    ? 'RODA: GESER WAKTU (±5 DETIK)'
+                    : `RODA: VOLUME (${Math.round(synth.volume * 100)}%)`;
+
                 lcdScreenBodyEl.innerHTML = `
                     <div class="flex-1 flex flex-col justify-between p-2.5 sm:p-3.5">
-                        <div class="flex items-start justify-between gap-2 border-b border-current/25 pb-1.5">
+                        <div class="flex items-start justify-between gap-2 lcd-divider-b pb-1.5">
                             <div class="min-w-0 flex-1">
                                 <div class="font-calc-matrix text-2xl sm:text-3xl leading-none font-bold truncate">
                                     ${song.title}
                                 </div>
-                                <div class="font-calc-digit text-[10px] sm:text-xs opacity-80 mt-1 truncate">
-                                    SUMBER: ${song.artist} // ${song.id}
+                                <div class="font-calc-digit text-[10px] sm:text-xs opacity-85 mt-1 truncate">
+                                    ARTIS: ${song.artist}
                                 </div>
                             </div>
-                            <div class="w-20 sm:w-24 flex gap-[2px] p-1 border border-current/50 shrink-0" title="Spektrum Audio">
+                            <div class="w-20 sm:w-24 flex gap-[2px] p-1 lcd-box-border shrink-0" title="Spektrum Audio">
                                 ${spectrumHTML}
                             </div>
                         </div>
@@ -1093,8 +1901,8 @@
                                 ${progressCellsHTML}
                             </div>
                             <div class="flex justify-between items-center mt-1 text-[9px] sm:text-[10px] font-calc-digit">
-                                <span>STORAGE: SUPABASE</span>
-                                <span>PUTAR RODA = VOL (${Math.round(synth.volume * 100)}%)</span>
+                                <span>${song.folder || 'SUPABASE'}</span>
+                                <span class="font-bold">${wheelBadge}</span>
                             </div>
                         </div>
                     </div>
@@ -1103,27 +1911,49 @@
         }
 
         synth.onTick = () => {
-            if (currentView().type === 'now-playing') {
+            if (isNowPlayingActive()) {
                 renderLCDScreen();
+            } else {
+                updateStatusAnnunciators();
             }
         };
 
         synth.onSongFinish = () => {
-            nextTrack();
+            const pool = state.currentQueue.length > 0 ? state.currentQueue : getAllTracks();
+            if (pool.length === 0) return;
+
+            if (state.repeatMode === 'one') {
+                startTrackAt(state.currentTrackIndex, pool);
+                return;
+            }
+
+            if (!state.shuffle && state.repeatMode === 'off' && state.currentTrackIndex >= pool.length - 1) {
+                synth.isPlaying = false;
+                synth.stopProgressTimer();
+                renderLCDScreen();
+                return;
+            }
+
+            nextTrack(true);
         };
 
         const IDLE_SCREENSAVER_MS = 15000;
         let idleScreensaverTimer = null;
 
         function wakeFromScreensaver() {
+            const wasSleeping = document.body.classList.contains('screensaver-mode');
             document.body.classList.remove('screensaver-mode');
+            if (wasSleeping) {
+                synth.playClick(1.0, 'wake');
+            }
             if (idleScreensaverTimer) clearTimeout(idleScreensaverTimer);
             idleScreensaverTimer = setTimeout(() => {
                 document.body.classList.add('screensaver-mode');
+                synth.playClick(1.0, 'sleep');
             }, IDLE_SCREENSAVER_MS);
         }
 
-        function startTrackAt(index, queue = null) {
+        function startTrackAt(index, queue = null, startPos = 0) {
             const list = (queue && queue.length > 0) ? queue : getAllTracks();
             if (!list || list.length === 0) {
                 state.currentQueue = [];
@@ -1136,15 +1966,29 @@
             const len = state.currentQueue.length;
             state.currentTrackIndex = ((index % len) + len) % len;
             const song = state.currentQueue[state.currentTrackIndex];
-            synth.playSong(song);
+            synth.playSong(song, startPos);
+            savePersistentState();
             renderLCDScreen();
         }
 
-        function nextTrack() {
-            if (state.isLocked) return;
+        function guardHoldLock() {
+            if (!state.isLocked) return false;
+            synth.playClick(0.7, 'wheel');
+            triggerHaptic([20, 30, 20]);
+            showLCDToast(isNowPlayingActive()
+                ? '[TERKUNCI - TAHAN MENU UNTUK BUKA]'
+                : '[TERKUNCI - BUKA DI NOW PLAYING]');
+            return true;
+        }
+
+        function nextTrack(fromAuto = false) {
+            if (!fromAuto && guardHoldLock()) return;
             const pool = state.currentQueue.length > 0 ? state.currentQueue : getAllTracks();
             if (pool.length === 0) return;
-            synth.playClick(1.12);
+            if (!fromAuto) {
+                synth.playClick(1.12, 'wheel');
+                triggerHaptic(10);
+            }
             if (state.shuffle && pool.length > 1) {
                 let next = Math.floor(Math.random() * pool.length);
                 if (next === state.currentTrackIndex) next = (next + 1) % pool.length;
@@ -1155,13 +1999,13 @@
         }
 
         function prevTrack() {
-            if (state.isLocked) return;
+            if (guardHoldLock()) return;
             const pool = state.currentQueue.length > 0 ? state.currentQueue : getAllTracks();
             if (pool.length === 0) return;
-            synth.playClick(0.95);
+            synth.playClick(0.95, 'wheel');
+            triggerHaptic(10);
             if (synth.elapsed > 3) {
-                synth.elapsed = 0;
-                try { synth.audioEl.currentTime = 0; } catch (e) {}
+                synth.seekBy(-synth.elapsed);
                 renderLCDScreen();
             } else {
                 startTrackAt(state.currentTrackIndex - 1, pool);
@@ -1171,57 +2015,137 @@
         function cycleLCDTheme() {
             state.themeIndex = (state.themeIndex + 1) % LCD_THEMES.length;
             document.body.setAttribute('data-lcd-theme', LCD_THEMES[state.themeIndex]);
-            synth.playClick(1.15);
+            synth.playClick(1.15, 'wheel');
+            savePersistentState();
             renderLCDScreen();
         }
 
         function toggleNightMode() {
             state.nightMode = !state.nightMode;
             document.body.setAttribute('data-night-mode', state.nightMode ? 'true' : 'false');
-            synth.playClick(state.nightMode ? 1.18 : 0.92);
+            synth.playClick(state.nightMode ? 1.18 : 0.92, 'wheel');
+            savePersistentState();
             renderLCDScreen();
         }
 
         function toggleHoldLock() {
             state.isLocked = !state.isLocked;
-            synth.playClick(state.isLocked ? 0.82 : 1.2);
+            synth.playClick(1.0, state.isLocked ? 'sleep' : 'wake');
+            triggerHaptic(state.isLocked ? [25, 35, 25] : 20);
+            showLCDToast(state.isLocked ? 'KUNCI HOLD: AKTIF' : 'KUNCI HOLD: MATI', 1300);
             renderLCDScreen();
         }
 
+        function cycleRepeatMode() {
+            const idx = REPEAT_MODES.indexOf(state.repeatMode);
+            state.repeatMode = REPEAT_MODES[(idx + 1) % REPEAT_MODES.length];
+            synth.playClick(1.1, 'wheel');
+            savePersistentState();
+            renderLCDScreen();
+        }
+
+        async function toggleReminderCompleted(reminderIndex) {
+            const orderedReminders = sortNewestFirst(supabaseStore.reminders);
+            const rem = orderedReminders[reminderIndex];
+            if (!rem) return;
+
+            const nextVal = !rem.is_completed;
+            rem.is_completed = nextVal;
+            synth.playClick(1.0, 'enter');
+            renderLCDScreen();
+
+            if (supabaseClient && rem.id !== undefined) {
+                const { error } = await supabaseClient
+                    .from('pengingat')
+                    .update({ is_completed: nextVal })
+                    .eq('id', rem.id);
+
+                if (error) {
+                    rem.is_completed = !nextVal;
+                    showLCDToast('GAGAL UPDATE SUPABASE');
+                    renderLCDScreen();
+                } else {
+                    showLCDToast(nextVal ? 'DITANDAI SELESAI' : 'DITANDAI AKTIF', 1200);
+                }
+            }
+        }
+
         function handleWheelStep(dir) {
-            if (state.isLocked) return;
+            if (guardHoldLock()) return;
             const view = currentView();
 
             if (view.type === 'menu') {
                 const next = view.selectedIndex + dir;
                 if (next >= 0 && next < view.items.length) {
                     view.selectedIndex = next;
-                    synth.playClick(dir > 0 ? 1.06 : 0.96);
+                    synth.playClick(dir > 0 ? 1.06 : 0.96, 'wheel');
+                    syncMenuSelectionDOM(view);
+                }
+            } else if (view.type === 'detail-page') {
+                const nextP = (view.pageIndex || 0) + dir;
+                if (nextP >= 0 && nextP < view.pages.length) {
+                    view.pageIndex = nextP;
+                    synth.playClick(dir > 0 ? 1.08 : 0.94, 'wheel');
                     renderLCDScreen();
                 }
-            } else if (view.type === 'detail') {
-                const detailScroll = document.getElementById('calcDetailScroll');
-                if (detailScroll) {
-                    detailScroll.scrollTop += dir * 44;
-                    synth.playClick(dir > 0 ? 1.04 : 0.96);
-                }
             } else if (view.type === 'now-playing') {
-                synth.setVolume(synth.volume + dir * 0.05);
-                synth.playClick(dir > 0 ? 1.1 : 0.92);
+                if (state.wheelMode === 'seek') {
+                    synth.seekBy(dir * 5);
+                    synth.playClick(dir > 0 ? 1.14 : 0.9, 'wheel');
+                } else {
+                    synth.setVolume(synth.volume + dir * 0.05);
+                    synth.playClick(dir > 0 ? 1.1 : 0.92, 'wheel');
+                    savePersistentState();
+                }
                 renderLCDScreen();
             }
         }
 
         function handleSelectAction() {
             const view = currentView();
+
+            if (view.type === 'now-playing') {
+                if (guardHoldLock()) return;
+                state.wheelMode = state.wheelMode === 'volume' ? 'seek' : 'volume';
+                synth.playClick(1.0, 'enter');
+                triggerHaptic(12);
+                showLCDToast(state.wheelMode === 'seek' ? 'MODE RODA: GESER WAKTU' : 'MODE RODA: VOLUME', 1200);
+                renderLCDScreen();
+                return;
+            }
+
+            if (view.type === 'detail-page') {
+                if (guardHoldLock()) return;
+                if (view.pageIndex < view.pages.length - 1) {
+                    view.pageIndex++;
+                    synth.playClick(1.08, 'wheel');
+                    triggerHaptic(10);
+                    renderLCDScreen();
+                } else {
+                    handleMenuBack();
+                }
+                return;
+            }
+
+            if (view.type === 'reminder-detail') {
+                if (guardHoldLock()) return;
+                triggerHaptic(12);
+                toggleReminderCompleted(view.reminderIndex);
+                return;
+            }
+
             if (view.type !== 'menu') return;
 
             const item = view.items[view.selectedIndex];
             if (!item) return;
 
-            if (state.isLocked && !item.allowWhenLocked) return;
+            if (state.isLocked && !item.allowWhenLocked) {
+                guardHoldLock();
+                return;
+            }
 
-            synth.playClick(1.22);
+            synth.playClick(1.0, 'enter');
+            triggerHaptic(12);
 
             if (item.action === 'submenu') {
                 const sub = buildSubmenu(item.target);
@@ -1229,13 +2153,29 @@
                     state.navStack.push(sub);
                     renderLCDScreen();
                 }
-            } else if (item.action === 'detail') {
+            } else if (item.action === 'all-tracks') {
+                state.navStack.push(buildTrackListMenu('SEMUA LAGU', getAllTracks()));
+                renderLCDScreen();
+            } else if (item.action === 'folder-tracks') {
+                const filtered = getAllTracks().filter(t => t.folder === item.folderName);
+                state.navStack.push(buildTrackListMenu(item.folderName, filtered));
+                renderLCDScreen();
+            } else if (item.action === 'detail-page') {
                 state.navStack.push({
                     id: `detail-${Date.now()}`,
-                    title: item.detailTitle || 'RINCIAN',
-                    type: 'detail',
+                    title: item.detailTitle || 'CATATAN',
+                    type: 'detail-page',
                     detailTitle: item.detailTitle,
-                    detailBody: item.detailBody
+                    pages: item.pages || ['(Kosong)'],
+                    pageIndex: 0
+                });
+                renderLCDScreen();
+            } else if (item.action === 'reminder-detail') {
+                state.navStack.push({
+                    id: `rem-${Date.now()}`,
+                    title: 'DETAIL PENGINGAT',
+                    type: 'reminder-detail',
+                    reminderIndex: item.reminderIndex
                 });
                 renderLCDScreen();
             } else if (item.action === 'play-track') {
@@ -1250,9 +2190,10 @@
                 state.navStack.push({ id: 'now-playing', title: 'SEDANG DIPUTAR', type: 'now-playing' });
                 renderLCDScreen();
             } else if (item.action === 'shuffle-play') {
-                const pool = getAllTracks();
+                const pool = item.queue && item.queue.length > 0 ? item.queue : getAllTracks();
                 if (pool.length === 0) return;
                 state.shuffle = true;
+                savePersistentState();
                 const rand = Math.floor(Math.random() * pool.length);
                 startTrackAt(rand, pool);
                 state.navStack.push({ id: 'now-playing', title: 'SEDANG DIPUTAR', type: 'now-playing' });
@@ -1263,22 +2204,29 @@
                 toggleNightMode();
             } else if (item.action === 'toggle-hold') {
                 toggleHoldLock();
+            } else if (item.action === 'cycle-repeat') {
+                cycleRepeatMode();
             } else if (item.action === 'toggle-shuffle') {
                 state.shuffle = !state.shuffle;
+                savePersistentState();
                 renderLCDScreen();
             } else if (item.action === 'toggle-click') {
                 synth.clickEnabled = !synth.clickEnabled;
+                savePersistentState();
                 renderLCDScreen();
             } else if (item.action === 'sync-supabase') {
                 supabaseStore.statusLabel = 'SINKRON...';
                 renderLCDScreen();
                 syncSupabaseData();
+            } else if (item.action === 'upload-audio') {
+                triggerPhoneAudioPicker();
             }
         }
 
         function handleMenuBack() {
-            if (state.isLocked) return;
-            synth.playClick(0.88);
+            if (guardHoldLock()) return;
+            synth.playClick(1.0, 'back');
+            triggerHaptic(10);
             if (state.navStack.length > 1) {
                 state.navStack.pop();
                 renderLCDScreen();
@@ -1286,13 +2234,15 @@
         }
 
         function handlePlayPause() {
-            if (state.isLocked) return;
-            synth.playClick(1.1);
+            if (guardHoldLock()) return;
+            synth.playClick(1.1, 'wheel');
+            triggerHaptic(12);
             const pool = state.currentQueue.length > 0 ? state.currentQueue : getAllTracks();
             if (!synth.currentSong) {
                 if (pool.length > 0) startTrackAt(0, pool);
             } else {
                 synth.togglePlayPause();
+                savePersistentState();
                 renderLCDScreen();
             }
         }
@@ -1301,12 +2251,25 @@
             window.addEventListener(evt, wakeFromScreensaver, { passive: true });
         });
 
+        /* Click Wheel & Tombol Navigasi: Gulir langsung jalan tanpa tertahan sentuhan awal */
         const clickWheelEl = document.getElementById('clickWheel');
         const centerBtnEl = document.getElementById('btnSelect');
+        const btnMenuEl = document.getElementById('btnMenu');
+        const btnNextEl = document.getElementById('btnNext');
+        const btnPrevEl = document.getElementById('btnPrev');
+
         let isRotating = false;
+        let hasMovedDuringGesture = false;
+        let pointerStartX = 0;
+        let pointerStartY = 0;
         let prevAngle = null;
         let angleBuffer = 0;
+        let smoothVelocity = 0;
+        let lastMoveTime = 0;
+        let inertiaFrame = null;
+        let activeButtonDragCanceller = null;
         const DEG_PER_TICK = 20;
+        const DRAG_CANCEL_THRESHOLD_PX = 6;
 
         function computeAngle(x, y) {
             const rect = clickWheelEl.getBoundingClientRect();
@@ -1315,22 +2278,70 @@
             return Math.atan2(y - cy, x - cx) * (180 / Math.PI);
         }
 
+        function stopInertia() {
+            if (inertiaFrame) {
+                cancelAnimationFrame(inertiaFrame);
+                inertiaFrame = null;
+            }
+        }
+
+        function runInertia() {
+            if (Math.abs(smoothVelocity) < 0.18) {
+                smoothVelocity = 0;
+                inertiaFrame = null;
+                return;
+            }
+            angleBuffer += smoothVelocity * 16;
+            smoothVelocity *= 0.84;
+
+            while (angleBuffer >= DEG_PER_TICK) {
+                handleWheelStep(1);
+                angleBuffer -= DEG_PER_TICK;
+            }
+            while (angleBuffer <= -DEG_PER_TICK) {
+                handleWheelStep(-1);
+                angleBuffer += DEG_PER_TICK;
+            }
+            inertiaFrame = requestAnimationFrame(runInertia);
+        }
+
         function beginRotate(x, y, target) {
-            if (target === centerBtnEl) return;
+            if (target === centerBtnEl) {
+                return;
+            }
+            stopInertia();
             isRotating = true;
+            hasMovedDuringGesture = false;
+            pointerStartX = x;
+            pointerStartY = y;
             prevAngle = computeAngle(x, y);
             angleBuffer = 0;
+            smoothVelocity = 0;
+            lastMoveTime = performance.now();
         }
 
         function updateRotate(x, y) {
             if (!isRotating || prevAngle === null) return;
+            const dist = Math.hypot(x - pointerStartX, y - pointerStartY);
+            if (!hasMovedDuringGesture && dist >= DRAG_CANCEL_THRESHOLD_PX) {
+                hasMovedDuringGesture = true;
+                if (activeButtonDragCanceller) {
+                    activeButtonDragCanceller();
+                }
+            }
+
+            const now = performance.now();
+            const dt = Math.max(10, now - lastMoveTime);
             const cur = computeAngle(x, y);
             let diff = cur - prevAngle;
             if (diff > 180) diff -= 360;
             if (diff < -180) diff += 360;
 
+            const rawVel = diff / dt;
+            smoothVelocity = smoothVelocity * 0.72 + rawVel * 0.28;
             angleBuffer += diff;
             prevAngle = cur;
+            lastMoveTime = now;
 
             while (angleBuffer >= DEG_PER_TICK) {
                 handleWheelStep(1);
@@ -1343,9 +2354,18 @@
         }
 
         function endRotate() {
+            if (!isRotating) return;
+            const wasDragging = hasMovedDuringGesture;
             isRotating = false;
+            hasMovedDuringGesture = false;
             prevAngle = null;
-            angleBuffer = 0;
+            activeButtonDragCanceller = null;
+            if (wasDragging && Math.abs(smoothVelocity) > 0.35) {
+                inertiaFrame = requestAnimationFrame(runInertia);
+            } else {
+                smoothVelocity = 0;
+                angleBuffer = 0;
+            }
         }
 
         clickWheelEl.addEventListener('mousedown', (e) => beginRotate(e.clientX, e.clientY, e.target));
@@ -1366,6 +2386,7 @@
         }, { passive: false });
 
         clickWheelEl.addEventListener('touchend', endRotate);
+        clickWheelEl.addEventListener('touchcancel', endRotate);
 
         clickWheelEl.addEventListener('wheel', (e) => {
             e.preventDefault();
@@ -1374,27 +2395,183 @@
             }
         }, { passive: false });
 
-        document.getElementById('btnMenu').addEventListener('click', (e) => { e.stopPropagation(); handleMenuBack(); });
-        document.getElementById('btnNext').addEventListener('click', (e) => { e.stopPropagation(); nextTrack(); });
-        document.getElementById('btnPrev').addEventListener('click', (e) => { e.stopPropagation(); prevTrack(); });
-        document.getElementById('btnPlay').addEventListener('click', (e) => { e.stopPropagation(); handlePlayPause(); });
-        centerBtnEl.addEventListener('click', (e) => { e.stopPropagation(); handleSelectAction(); });
+        /* Tombol MENU: Fitur tahan HANYA aktif di Now Playing; jika jari bergeser, langsung beralih ke gulir roda */
+        let menuLongPressTimer = null;
+        let menuLongPressed = false;
+        let menuCancelledByScroll = false;
+
+        function clearMenuHoldTimer() {
+            if (menuLongPressTimer) {
+                clearTimeout(menuLongPressTimer);
+                menuLongPressTimer = null;
+            }
+        }
+
+        function startMenuPress(e) {
+            menuLongPressed = false;
+            menuCancelledByScroll = false;
+            clearMenuHoldTimer();
+
+            const pt = e.touches && e.touches[0] ? e.touches[0] : e;
+            beginRotate(pt.clientX, pt.clientY, null);
+            activeButtonDragCanceller = () => {
+                menuCancelledByScroll = true;
+                clearMenuHoldTimer();
+            };
+
+            if (isNowPlayingActive()) {
+                menuLongPressTimer = setTimeout(() => {
+                    menuLongPressTimer = null;
+                    if (!isNowPlayingActive() || menuCancelledByScroll || hasMovedDuringGesture) return;
+                    menuLongPressed = true;
+                    toggleHoldLock();
+                }, 650);
+            }
+        }
+
+        function endMenuPress() {
+            const wasLongPressed = menuLongPressed;
+            const wasScrolled = menuCancelledByScroll || hasMovedDuringGesture;
+            clearMenuHoldTimer();
+            menuLongPressed = false;
+            menuCancelledByScroll = false;
+            activeButtonDragCanceller = null;
+            if (!wasLongPressed && !wasScrolled) {
+                handleMenuBack();
+            }
+        }
+
+        btnMenuEl.addEventListener('pointerdown', startMenuPress);
+        btnMenuEl.addEventListener('pointerup', endMenuPress);
+        btnMenuEl.addEventListener('pointercancel', () => {
+            clearMenuHoldTimer();
+            menuLongPressed = false;
+            menuCancelledByScroll = false;
+            activeButtonDragCanceller = null;
+        });
+
+        /* Tombol NEXT / PREV: Fitur tahan HANYA aktif di Now Playing; di luar Now Playing tanpa fitur tahan & langsung bisa digulir */
+        function bindSeekOrSkipButton(btnEl, direction) {
+            let holdTimer = null;
+            let seekInterval = null;
+            let didSeek = false;
+            let cancelledByScroll = false;
+
+            const clearButtonHold = () => {
+                if (holdTimer) { clearTimeout(holdTimer); holdTimer = null; }
+                if (seekInterval) { clearInterval(seekInterval); seekInterval = null; }
+            };
+
+            const triggerSkip = () => {
+                if (!isNowPlayingActive()) return;
+                if (direction > 0) nextTrack(false);
+                else prevTrack();
+            };
+
+            const startPress = (e) => {
+                didSeek = false;
+                cancelledByScroll = false;
+                clearButtonHold();
+
+                const pt = e.touches && e.touches[0] ? e.touches[0] : e;
+                beginRotate(pt.clientX, pt.clientY, null);
+                activeButtonDragCanceller = () => {
+                    cancelledByScroll = true;
+                    clearButtonHold();
+                };
+
+                if (!isNowPlayingActive()) return;
+
+                holdTimer = setTimeout(() => {
+                    holdTimer = null;
+                    if (!isNowPlayingActive() || cancelledByScroll || hasMovedDuringGesture) return;
+                    if (guardHoldLock()) return;
+                    didSeek = true;
+                    synth.seekBy(direction * 15);
+                    synth.playClick(direction > 0 ? 1.15 : 0.9, 'wheel');
+                    triggerHaptic(10);
+                    showLCDToast(direction > 0 ? 'MAJU +15 DETIK' : 'MUNDUR -15 DETIK', 900);
+                    seekInterval = setInterval(() => {
+                        if (!isNowPlayingActive() || cancelledByScroll) {
+                            clearButtonHold();
+                            return;
+                        }
+                        synth.seekBy(direction * 15);
+                        synth.playClick(direction > 0 ? 1.15 : 0.9, 'wheel');
+                        triggerHaptic(10);
+                    }, 320);
+                }, 520);
+            };
+
+            const endPress = () => {
+                const wasSeeked = didSeek;
+                const wasScrolled = cancelledByScroll || hasMovedDuringGesture;
+                clearButtonHold();
+                didSeek = false;
+                cancelledByScroll = false;
+                activeButtonDragCanceller = null;
+                if (!isNowPlayingActive() || wasScrolled) return;
+                if (!wasSeeked) {
+                    triggerSkip();
+                }
+            };
+
+            btnEl.addEventListener('pointerdown', startPress);
+            btnEl.addEventListener('pointerup', endPress);
+            btnEl.addEventListener('pointercancel', () => {
+                clearButtonHold();
+                didSeek = false;
+                cancelledByScroll = false;
+                activeButtonDragCanceller = null;
+            });
+        }
+
+        bindSeekOrSkipButton(btnNextEl, 1);
+        bindSeekOrSkipButton(btnPrevEl, -1);
+
+        document.getElementById('btnPlay').addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (hasMovedDuringGesture) return;
+            handlePlayPause();
+        });
+        centerBtnEl.addEventListener('click', (e) => {
+            e.stopPropagation();
+            handleSelectAction();
+        });
 
         lcdScreenBodyEl.addEventListener('click', (e) => {
+            const view = currentView();
+
+            if (view.type === 'detail-page') {
+                if (guardHoldLock()) return;
+                const rect = lcdScreenBodyEl.getBoundingClientRect();
+                const isLeft = (e.clientX - rect.left) < rect.width * 0.42;
+                handleWheelStep(isLeft ? -1 : 1);
+                return;
+            }
+
+            if (view.type === 'reminder-detail') {
+                if (guardHoldLock()) return;
+                toggleReminderCompleted(view.reminderIndex);
+                return;
+            }
+
             const row = e.target.closest('.calc-menu-row');
             if (!row) return;
             const idx = parseInt(row.dataset.idx, 10);
-            const view = currentView();
             if (view.type === 'menu' && !isNaN(idx)) {
                 const targetItem = view.items[idx];
-                if (state.isLocked && !(targetItem && targetItem.allowWhenLocked)) return;
+                if (state.isLocked && !(targetItem && targetItem.allowWhenLocked)) {
+                    guardHoldLock();
+                    return;
+                }
 
                 if (view.selectedIndex === idx) {
                     handleSelectAction();
                 } else {
                     view.selectedIndex = idx;
-                    synth.playClick(1.05);
-                    renderLCDScreen();
+                    synth.playClick(1.05, 'wheel');
+                    syncMenuSelectionDOM(view);
                 }
             }
         });
@@ -1405,11 +2582,26 @@
             else if (e.key === 'Enter') { e.preventDefault(); handleSelectAction(); }
             else if (e.key === 'Escape' || e.key === 'Backspace') { e.preventDefault(); handleMenuBack(); }
             else if (e.key === ' ') { e.preventDefault(); handlePlayPause(); }
-            else if (e.key === 'ArrowRight') { e.preventDefault(); nextTrack(); }
-            else if (e.key === 'ArrowLeft') { e.preventDefault(); prevTrack(); }
-            else if (e.key.toLowerCase() === 'h') { e.preventDefault(); toggleHoldLock(); }
+            else if (e.key === 'ArrowRight') {
+                e.preventDefault();
+                if (currentView().type === 'detail-page') handleWheelStep(1);
+                else if (isNowPlayingActive()) {
+                    if (e.shiftKey) { if (!guardHoldLock()) synth.seekBy(15); }
+                    else nextTrack(false);
+                }
+            }
+            else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                if (currentView().type === 'detail-page') handleWheelStep(-1);
+                else if (isNowPlayingActive()) {
+                    if (e.shiftKey) { if (!guardHoldLock()) synth.seekBy(-15); }
+                    else prevTrack();
+                }
+            }
+            else if (e.key.toLowerCase() === 'h' && isNowPlayingActive()) { e.preventDefault(); toggleHoldLock(); }
         });
 
+        loadPersistentState();
         renderLCDScreen();
         wakeFromScreensaver();
         syncSupabaseData();
